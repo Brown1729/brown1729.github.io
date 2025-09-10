@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Pages on Brown1729</title>
+        <link>https://brown1729.github.io/page/</link>
+        <description>Recent content in Pages on Brown1729</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Brown1729</copyright>
+        <lastBuildDate>Fri, 09 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://brown1729.github.io/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>关于</title>
+        <link>https://brown1729.github.io/%E5%85%B3%E4%BA%8E/</link>
+        <pubDate>Tue, 09 Sep 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://brown1729.github.io/%E5%85%B3%E4%BA%8E/</guid>
+        <description>&lt;h2 id=&#34;介绍&#34;&gt;介绍
+&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;本人对什么几乎都是“三分钟热度”，涉猎面广，但没有擅长的领域。
+学过很多语言，但现在全都可以被AI替代；了解过很多技术，但都停留在科普层面。
+如果你喜欢我的文章，就请一直喜欢吧&amp;gt;_&amp;lt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;成就&#34;&gt;成就
+&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;无
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;教育经历&#34;&gt;教育经历
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;东南大学 | 南京 本科在读，自动化专业   2023 - 至今&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>文章</title>
+        <link>https://brown1729.github.io/archives/</link>
+        <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+        
+        <guid>https://brown1729.github.io/archives/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>查找</title>
+        <link>https://brown1729.github.io/search/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://brown1729.github.io/search/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>链接</title>
+        <link>https://brown1729.github.io/%E9%93%BE%E6%8E%A5/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://brown1729.github.io/%E9%93%BE%E6%8E%A5/</guid>
+        <description></description>
+        </item>
+        
+    </channel>
+</rss>
