@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Brown1729</title>
-        <link>http://localhost:1313/en/</link>
+        <link>https://brown1729.github.io/en/</link>
         <description>Recent content on Brown1729</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>Brown1729</copyright>
-        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="http://localhost:1313/en/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="https://brown1729.github.io/en/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ResNet Bottleneck Architecture</title>
-        <link>http://localhost:1313/en/p/resnet-bottleneck-architecture/</link>
+        <link>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</link>
         <pubDate>Thu, 26 Mar 2026 19:37:00 +0800</pubDate>
         
-        <guid>http://localhost:1313/en/p/resnet-bottleneck-architecture/</guid>
-        <description>&lt;img src="http://localhost:1313/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h2 id=&#34;the-computational-challenge-of-going-deep&#34;&gt;The Computational Challenge of Going Deep
+        <guid>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</guid>
+        <description>&lt;img src="https://brown1729.github.io/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h2 id=&#34;the-computational-challenge-of-going-deep&#34;&gt;The Computational Challenge of Going Deep
 &lt;/h2&gt;&lt;h2 id=&#34;the-bottleneck-block-solves-this-by-introducing-a-compress-process-expand-pattern-that-reduces-computation-by-a-factor-of-roughly-8-while-maintaining-or-even-increasing-representational-power&#34;&gt;As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:
 $$
  \text{FLOPs}_{\text{basic}} = 2 \times (256 \times 256 \times 3 \times 3) \times H \times W = 1{,}179{,}648 \times H \times W 
@@ -241,10 +241,10 @@ This would be impractical. The bottleneck design makes 152-layer networks feasib
         </item>
         <item>
         <title>About</title>
-        <link>http://localhost:1313/en/about/</link>
+        <link>https://brown1729.github.io/en/about/</link>
         <pubDate>Tue, 09 Sep 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/en/about/</guid>
+        <guid>https://brown1729.github.io/en/about/</guid>
         <description>&lt;h2 id=&#34;&#34;&gt;
 &lt;/h2&gt;</description>
         </item>
