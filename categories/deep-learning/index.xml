@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Deep Learning on Brown1729</title>
+        <link>http://localhost:1313/categories/deep-learning/</link>
+        <description>Recent content in Deep Learning on Brown1729</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Brown1729</copyright>
+        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/deep-learning/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>ResNet Bottleneck Architecture</title>
+        <link>http://localhost:1313/p/resnet-bottleneck-architecture/</link>
+        <pubDate>Thu, 26 Mar 2026 19:37:00 +0800</pubDate>
+        
+        <guid>http://localhost:1313/p/resnet-bottleneck-architecture/</guid>
+        <description>&lt;img src="http://localhost:1313/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h2 id=&#34;the-computational-challenge-of-going-deep&#34;&gt;The Computational Challenge of Going Deep
+&lt;/h2&gt;&lt;h2 id=&#34;the-bottleneck-block-solves-this-by-introducing-a-compress-process-expand-pattern-that-reduces-computation-by-a-factor-of-roughly-8-while-maintaining-or-even-increasing-representational-power&#34;&gt;As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:
+$$
+ \text{FLOPs}_{\text{basic}} = 2 \times (256 \times 256 \times 3 \times 3) \times H \times W = 1{,}179{,}648 \times H \times W 
+$$
+For ResNet-50 with 16 blocks at 256 channels on a $ 14 \times 14 $ feature map, this is roughly 3.7 billion FLOPs just for one stage. Scaling to deeper networks (101, 152 layers) with basic blocks would be computationally prohibitive.
+The bottleneck block solves this by introducing a &amp;ldquo;compress, process, expand&amp;rdquo; pattern that reduces computation by a factor of roughly 8 while maintaining or even increasing representational power.
+&lt;/h2&gt;&lt;h2 id=&#34;the-bottleneck-architecture&#34;&gt;The Bottleneck Architecture
+&lt;/h2&gt;&lt;h2 id=&#34;&#34;&gt;The bottleneck block uses three convolutions instead of two, with a channel compression in the middle:
+$$
+ y = F_{\text{bottleneck}}(x) + x 
+$$
+where $ F_{\text{bottleneck}} $ consists of:
+Layer 1: $ 1 \times 1 $ convolution (compress)
+$$
+ h_1 = \text{ReLU}(\text{BN}(W_1 \cdot x)) 
+$$
+Reduces channels from $ C $ to $ C/4 $. For example, 256 channels to 64.
+Layer 2: $ 3 \times 3 $ convolution (process)
+$$
+ h_2 = \text{ReLU}(\text{BN}(W_2 * h_1)) 
+$$
+Performs spatial processing at the reduced channel count. The $ 3 \times 3 $ kernel captures spatial patterns, but at $ C/4 $ channels instead of $ C $.
+Layer 3: $ 1 \times 1 $ convolution (expand)
+$$
+ h_3 = \text{BN}(W_3 \cdot h_2) 
+$$
+Expands channels back from $ C/4 $ to $ C $. Note: no ReLU after this layer (the ReLU comes after the addition with the skip connection).
+Skip connection and activation:
+$$
+ y = \text{ReLU}(h_3 + x) 
+$$
+&lt;/h2&gt;&lt;h2 id=&#34;why-the-bottleneck-saves-computation&#34;&gt;Why the Bottleneck Saves Computation
+&lt;/h2&gt;&lt;h2 id=&#34;the-bottleneck-block-is-roughly-17-times-cheaper-than-the-basic-block-at-the-same-channel-count-this-massive-savings-is-what-enables-resnet-50-101-and-152-to-be-practical&#34;&gt;The key insight is that the expensive $ 3 \times 3 $ convolution operates on a compressed representation with $ C/4 $ channels instead of $ C $ channels.
+Basic block FLOPs (two $ 3 \times 3 $ convolutions at $ C $ channels):
+$$ \text{FLOPs}_{\text{basic}} = 2 \times C^2 \times 9 \times H \times W = 18C^2 HW $$
+Bottleneck block FLOPs:
+• $ 1 \times 1 $ compress ($ C \rightarrow C/4 $): $ C \times C/4 \times 1 \times HW = C^2 HW/4 $
+• $ 3 \times 3 $ process ($ C/4 \rightarrow C/4 $): $ (C/4)^2 \times 9 \times HW = 9C^2 HW/16 $
+• $ 1 \times 1 $ expand ($ C/4 \rightarrow C $): $ C/4 \times C \times 1 \times HW = C^2 HW/4 $
+$$ \text{FLOPs}_{\text{bottleneck}} = C^2 HW \left(\frac{1}{4} + \frac{9}{16} + \frac{1}{4}\right) = C^2 HW \times \frac{17}{16} \approx 1.06 C^2 HW $$
+Ratio:
+$$
+ \frac{\text{FLOPs}_{\text{basic}}}{\text{FLOPs}_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17
+$$
+The bottleneck block is roughly 17 times cheaper than the basic block at the same channel count. This massive savings is what enables ResNet-50, 101, and 152 to be practical.
+&lt;/h2&gt;&lt;h2 id=&#34;worked-example-computational-savings&#34;&gt;Worked Example: Computational Savings
+&lt;/h2&gt;&lt;h2 id=&#34;savings--231m--136m-approx-17times-&#34;&gt;Consider a bottleneck block at stage 3 with $ C = 256 $ channels and $ H \times W = 14 \times 14 $:
+$ 1 \times 1 $ compress ($ 256 \rightarrow 64 $):
+$$ 256 \times 64 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$
+$ 3 \times 3 $ process ($ 64 \rightarrow 64 $):
+$$ 64 \times 64 \times 9 \times 196 = 7{,}225{,}344 \text{ FLOPs} $$
+$ 1 \times 1 $ expand ($ 64 \rightarrow 256 $):
+$$ 64 \times 256 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$
+Total bottleneck: $ 13{,}647{,}872 $ FLOPs
+Equivalent basic block (two $ 3 \times 3 $ at 256 channels):
+$$ 2 \times 256 \times 256 \times 9 \times 196 = 231{,}211{,}008 \text{ FLOPs} $$
+Savings: $ 231M / 13.6M \approx 17\times $
+&lt;/h2&gt;&lt;h2 id=&#34;lin-et-al-2013-introduced--1-times-1--convolutions-in-the-network-in-network-paper-and-googlenetinception-popularized-them-for-dimension-reduction-resnets-bottleneck-design-makes-them-central-to-the-architecture&#34;&gt;The $ 1 \times 1 $ Convolution
+The $ 1 \times 1 $ convolution (pointwise convolution) is the key enabler of the bottleneck design. Understanding it is essential.
+What a $ 1 \times 1 $ convolution does:
+At each spatial position $ (h, w) $, the $ 1 \times 1 $ convolution applies a linear transformation to the channel vector:
+$$ y_{hw} = W \cdot x_{hw} + b $$
+where $ x_{hw} \in \mathbb{R}^{C_{in}} $ is the input feature vector at position $ (h, w) $, $ W \in \mathbb{R}^{C_{out} \times C_{in}} $ is the weight matrix, and $ y_{hw} \in \mathbb{R}^{C_{out}} $ is the output.
+&lt;strong&gt;What it does NOT do:&lt;/strong&gt;
+• It does not look at neighboring spatial positions (no spatial receptive field)
+• It does not capture spatial patterns (that is the  3 \times 3  convolution&amp;rsquo;s job)
+&lt;strong&gt;What it is good at:&lt;/strong&gt;
+• Changing the number of channels (cheaply)
+• Learning linear combinations of feature channels
+• Channel mixing: each output channel is a weighted sum of all input channels
+• Dimensionality reduction: compressing a high-dimensional channel vector into a lower-dimensional one
+Lin et al. (2013) introduced  1 \times 1  convolutions in the Network-in-Network paper, and GoogLeNet/Inception popularized them for dimension reduction. ResNet&amp;rsquo;s bottleneck design makes them central to the architecture.
+&lt;/h2&gt;&lt;h2 id=&#34;the-compression-expansion-pattern&#34;&gt;The Compression-Expansion Pattern
+&lt;/h2&gt;&lt;h2 id=&#34;the-common-principle-move-to-a-different-dimensionality-for-processing-then-return-to-the-original-dimensionality-the-working-dimension-can-be-larger-or-smaller-depending-on-the-design-goals-computational-savings-vs-representational-richness&#34;&gt;The bottleneck&amp;rsquo;s &amp;ldquo;compress, process, expand&amp;rdquo; pattern appears throughout deep learning:
+&lt;strong&gt;In ResNet bottleneck blocks:&lt;/strong&gt;
+$$ C\xrightarrow{1 \times 1} C/4 \xrightarrow{3 \times 3} C/4 \xrightarrow{1 \times 1} C $$
+Compress channels by 4x, do spatial processing cheaply, expand back.
+&lt;strong&gt;In MobileNet inverted bottlenecks:&lt;/strong&gt;
+$$ C \xrightarrow{1 \times 1} 6C \xrightarrow{3 \times 3\, \text{depthwise}} 6C \xrightarrow{1 \times 1} C $$
+The opposite direction: expand first, process, then compress. Called &amp;ldquo;inverted&amp;rdquo; because the wide part is in the middle.
+&lt;strong&gt;In Transformer FFN:&lt;/strong&gt;
+$$ 
+d_{model} \xrightarrow{W_1} 4 \times d_{model} \xrightarrow{\text{ReLU}} 4 \times d_{model} \xrightarrow{W_2} d_{model}
+$$
+Expand by 4x, apply non-linearity, compress back.
+The common principle: move to a different dimensionality for processing, then return to the original dimensionality. The &amp;ldquo;working dimension&amp;rdquo; can be larger or smaller depending on the design goals (computational savings vs. representational richness).
+&lt;/h2&gt;&lt;h2 id=&#34;bottleneck-vs-basic-when-to-use-which&#34;&gt;Bottleneck vs. Basic: When to Use Which
+&lt;/h2&gt;&lt;h2 id=&#34;resnet-50-also-performs-significantly-better-760-vs-733-top-1-accuracy-on-imagenet-showing-that-the-extra-depth-enabled-by-bottleneck-efficiency-translates-directly-into-better-performance&#34;&gt;The ResNet paper uses two different block types depending on model depth:
+&lt;strong&gt;Basic block&lt;/strong&gt; (used in ResNet-18 and ResNet-34):
+• Two  3 \times 3  convolutions
+• Simpler architecture
+• Fewer total layers but more FLOPs per block
+• Suitable for smaller models where computational budget allows
+&lt;strong&gt;Bottleneck block&lt;/strong&gt; (used in ResNet-50, 101, and 152):
+• Three convolutions ( 1 \times 1 ,  3 \times 3 ,  1 \times 1 )
+• More layers but fewer FLOPs per block
+• Suitable for deeper models where computational efficiency is critical
+&lt;strong&gt;The crossover point:&lt;/strong&gt;
+ResNet-34 (basic blocks): 21.8M parameters, 3.6 billion FLOPs
+ResNet-50 (bottleneck blocks): 25.6M parameters, 3.8 billion FLOPs
+Despite having 50 layers vs. 34, ResNet-50 has only slightly more parameters and FLOPs. This is because the bottleneck design is so much more efficient that 50 bottleneck layers cost about the same as 34 basic layers.
+ResNet-50 also performs significantly better (76.0% vs. 73.3% top-1 accuracy on ImageNet), showing that the extra depth enabled by bottleneck efficiency translates directly into better performance.
+&lt;/h2&gt;&lt;h2 id=&#34;channel-counts-in-practice&#34;&gt;Channel Counts in Practice
+&lt;/h2&gt;&lt;h2 id=&#34;note-that-the-inputoutput-channels-of-bottleneck-blocks-are-4x-the-bottleneck-channels-this-is-why-resnet-50-has-2048-channels-in-its-final-stage-compared-to-512-for-resnet-34-which-uses-basic-blocks&#34;&gt;The standard ResNet bottleneck uses a 4:1 compression ratio:
+&lt;strong&gt;Stage 1&lt;/strong&gt; ($ 56 \times 56 $):
+• Input/output channels: 256
+• Bottleneck channels: 64
+• Compression: $ 256 \rightarrow 64 \rightarrow 64 \rightarrow 256 $
+&lt;strong&gt;Stage 2&lt;/strong&gt; ($ 28 \times 28 $):
+• Input/output channels: 512
+• Bottleneck channels: 128
+• Compression: $ 512 \rightarrow 128 \rightarrow 128 \rightarrow 512 $
+&lt;strong&gt;Stage 3&lt;/strong&gt; ($ 14 \times 14 $):
+• Input/output channels: 1024
+• Bottleneck channels: 256
+• Compression: $ 1024 \rightarrow 256 \rightarrow 256 \rightarrow 1024 $
+&lt;strong&gt;Stage 4&lt;/strong&gt; ($ 7 \times 7 $):
+• Input/output channels: 2048
+• Bottleneck channels: 512
+• Compression: $ 2048 \rightarrow 512 \rightarrow 512 \rightarrow 2048 $
+Note that the input/output channels of bottleneck blocks are 4x the bottleneck channels. This is why ResNet-50 has 2048 channels in its final stage, compared to 512 for ResNet-34 (which uses basic blocks).
+&lt;/h2&gt;&lt;h2 id=&#34;the-expansion-factor&#34;&gt;The Expansion Factor
+&lt;/h2&gt;&lt;h2 id=&#34;-regnet-systematically-studies-the-design-space-and-finds-that-expansion-factors-around-2-4-are-optimal&#34;&gt;The ratio $ C_{out} / C_{bn} $ is called the &lt;strong&gt;expansion factor&lt;/strong&gt;. In the standard ResNet bottleneck, this factor is 4:
+$$ C_{out} = 4 \times C_{bn} $$
+&lt;strong&gt;Why 4?&lt;/strong&gt;
+This is an empirical choice that provides a good trade-off:
+• Too small (e.g., expansion = 1): no compression advantage, essentially a basic block with an extra layer
+• Too large (e.g., expansion = 16): aggressive compression might lose too much information in the bottleneck
+• Expansion = 4: the $ 1 \times 1 $ layers are cheap, the $ 3 \times 3 $ layer is affordable, and the compression does not significantly hurt representational power
+Later architectures have experimented with different expansion factors:
+• ResNeXt: uses grouped convolutions to increase effective width while keeping FLOPs constant
+• EfficientNet: uses variable expansion factors (between 1 and 6) optimized by neural architecture search
+• RegNet: systematically studies the design space and finds that expansion factors around 2-4 are optimal
+&lt;/h2&gt;&lt;h2 id=&#34;information-flow-through-the-bottleneck&#34;&gt;Information Flow Through the Bottleneck
+&lt;/h2&gt;&lt;h2 id=&#34;even-if-the-bottlenecks-compression-is-too-aggressive-and-discards-useful-information-the-skip-connection-preserves-the-full-256-dimensional-input-the-output--y--fx--x--has-access-to-both-the-original-information--x--and-the-bottlenecks-processed-contribution--fx-&#34;&gt;What happens to the information as it passes through the three layers?
+&lt;strong&gt;$ 1 \times 1 $ compress (information bottleneck):&lt;/strong&gt;
+The 256-dimensional feature vector is projected to 64 dimensions. This is a lossy compression: the network must learn which 64 linear combinations of the 256 features are most informative. The projection learns to preserve the features most relevant to the task.
+&lt;strong&gt;$ 3 \times 3 $ process (spatial reasoning):&lt;/strong&gt;
+In the compressed space, the  3 \times 3  convolution looks at neighboring spatial positions. It can detect edges, textures, and patterns in the compressed feature space. Because the channel count is small (64), this operation is cheap.
+&lt;strong&gt;$ 1 \times 1 $ expand (information recovery):&lt;/strong&gt;
+The 64-dimensional processed features are projected back to 256 dimensions. This expansion allows the network to &amp;ldquo;spread&amp;rdquo; the processed information across the full channel space, creating a rich output representation.
+&lt;strong&gt;The skip connection ensures nothing is lost:&lt;/strong&gt;
+Even if the bottleneck&amp;rsquo;s compression is too aggressive and discards useful information, the skip connection preserves the full 256-dimensional input. The output $ y = F(x) + x $ has access to both the original information ($ x $) and the bottleneck&amp;rsquo;s processed contribution ($ F(x) $).
+&lt;/h2&gt;&lt;h2 id=&#34;parameter-count-analysis&#34;&gt;Parameter Count Analysis
+&lt;/h2&gt;&lt;h2 id=&#34;the-bottleneck-has-17x-fewer-parameters-than-the-basic-block-this-is-the-same-ratio-as-the-computational-savings-because-both-flops-and-parameters-scale-with-the-same-product-of-channel-dimensions-and-kernel-size&#34;&gt;For a bottleneck block with input/output channels $ C $ and bottleneck channels $ C/4 $:
+&lt;strong&gt;$ 1 \times 1 $ compress:&lt;/strong&gt;
+$$ P_1 = C \times C/4 = C^2/4 $$
+&lt;strong&gt;$ 3 \times 3 $ process:&lt;/strong&gt;
+$$ P_2 = C/4 \times C/4 \times 9 = 9C^2/16 $$
+&lt;strong&gt;$ 1 \times 1 $ expand:&lt;/strong&gt;
+$$ P_3 = C/4 \times C = C^2/4 $$
+&lt;strong&gt;Total:&lt;/strong&gt;
+$$ P_{\text{bottleneck}} = C^2/4 + 9C^2/16 + C^2/4 = 17C^2/16 \approx 1.06C^2 $$
+&lt;strong&gt;Basic block (two $ 3 \times 3 $):&lt;/strong&gt;
+$$ P_{\text{basic}} = 2 \times C^2 \times 9 = 18C^2 $$
+&lt;strong&gt;Ratio:&lt;/strong&gt;
+$$ \frac{P_{\text{basic}}}{P_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17 $$
+The bottleneck has 17x fewer parameters than the basic block. This is the same ratio as the computational savings, because both FLOPs and parameters scale with the same product of channel dimensions and kernel size.
+&lt;/h2&gt;&lt;h2 id=&#34;bottleneck-blocks-in-resnet-variants&#34;&gt;Bottleneck Blocks in ResNet Variants
+&lt;/h2&gt;&lt;h2 id=&#34;the-depth-primarily-increases-in-stage-3-the--14-times-14--resolution-stage-this-is-because-stage-3-has-a-good-balance-of-spatial-resolution-enough-to-capture-meaningful-spatial-patterns-and-manageable-computation-not-too-large-spatially-not-too-many-channels&#34;&gt;The number of bottleneck blocks varies across ResNet configurations:
+ResNet-50: 3 + 4 + 6 + 3 = 16 bottleneck blocks
+ResNet-101: 3 + 4 + 23 + 3 = 33 bottleneck blocks
+ResNet-152: 3 + 8 + 36 + 3 = 50 bottleneck blocks
+The depth primarily increases in Stage 3 (the  14 \times 14  resolution stage). This is because Stage 3 has a good balance of spatial resolution (enough to capture meaningful spatial patterns) and manageable computation (not too large spatially, not too many channels).
+&lt;/h2&gt;&lt;h2 id=&#34;beyond-the-standard-bottleneck&#34;&gt;Beyond the Standard Bottleneck
+&lt;/h2&gt;&lt;h2 id=&#34;these-extensions-all-build-on-the-bottlenecks-core-idea-of-compress-process-expand-showing-how-fundamental-and-versatile-this-design-pattern-is&#34;&gt;Several important architectures have modified the bottleneck design:
+&lt;strong&gt;ResNeXt (2017):&lt;/strong&gt;
+Replaces the single $ 3 \times 3 $ convolution with $ G $ parallel grouped convolutions:
+$$ F(x) = \sum_{i=1}^{G} W_3^{(i)} \cdot \text{ReLU}(\text{BN}(W_2^{(i)} * \text{ReLU}(\text{BN}(W_1^{(i)} \cdot x)))) $$
+This increases the &amp;ldquo;cardinality&amp;rdquo; (number of parallel paths) while keeping FLOPs constant. ResNeXt-50 outperforms ResNet-50 at the same computational budget.
+&lt;strong&gt;SE-ResNet (Squeeze-and-Excitation, 2018):&lt;/strong&gt;
+Adds a channel attention mechanism after the bottleneck:
+$$ y = F(x) \cdot \text{SE}(F(x)) + x $$
+The SE module learns to re-weight channels based on their importance, adding very few parameters.
+&lt;strong&gt;EfficientNet (2019):&lt;/strong&gt;
+Uses neural architecture search to find optimal bottleneck configurations (expansion ratio, kernel size, channel count) for each block in the network.
+These extensions all build on the bottleneck&amp;rsquo;s core idea of compress-process-expand, showing how fundamental and versatile this design pattern is.
+&lt;/h2&gt;&lt;h2 id=&#34;gradient-flow-through-the-bottleneck&#34;&gt;Gradient Flow Through the Bottleneck
+&lt;/h2&gt;&lt;h2 id=&#34;this-is-precisely-why-the-bottleneck-design-works-the-skip-connections-gradient-is-always-1-regardless-of-how-many-layers-are-stacked-in-the-residual-branch-the-computational-savings-of-the-bottleneck-come-without-any-cost-to-gradient-flow&#34;&gt;The gradient flow through a bottleneck block follows the same residual principle as basic blocks, but with an additional layer in the residual branch:
+&lt;strong&gt;Forward:&lt;/strong&gt;
+$$ 
+y = h_3 + x = (\text{BN}(W_3 \cdot \text{ReLU}(\text{BN}(W_2 * \text{ReLU}(\text{BN}(W_1 \cdot x)))))) + x 
+$$
+&lt;strong&gt;Backward (through skip connection):&lt;/strong&gt;
+$$ 
+\frac{\partial \mathcal{L}}{\partial x} = \frac{\partial \mathcal{L}}{\partial y} \cdot \left(\frac{\partial h_3}{\partial x} + I\right) 
+$$
+The identity term $ I $ provides the gradient highway, just as in basic blocks. The gradient through the residual branch now passes through three layers instead of two, but the skip connection ensures that even if this three-layer gradient is small, the overall gradient remains healthy.
+&lt;strong&gt;The three-layer gradient path:&lt;/strong&gt;
+$$
+ \frac{\partial h_3}{\partial x} = \frac{\partial h_3}{\partial h_2} \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial x} 
+$$
+Each factor involves a convolution Jacobian and a ReLU mask. With three multiplicative factors instead of two (as in basic blocks), the residual gradient through the bottleneck branch may be smaller. However, the skip connection compensates: the identity gradient is independent of the number of layers in the branch.
+This is precisely why the bottleneck design works: the skip connection&amp;rsquo;s gradient is always 1, regardless of how many layers are stacked in the residual branch. The computational savings of the bottleneck come without any cost to gradient flow.
+&lt;/h2&gt;&lt;h2 id=&#34;the-role-of-batch-normalization-in-bottleneck-blocks&#34;&gt;The Role of Batch Normalization in Bottleneck Blocks
+&lt;/h2&gt;&lt;h2 id=&#34;the-relu-after-the-addition---y--textreluh_3--x---is-applied-to-the-combined-output-this-means-no-batchnorm-appears-between-the-addition-and-the-final-activation-keeping-the-skip-connection-as-clean-as-possible-only-one-non-linearity-on-the-shortcut-path&#34;&gt;Batch normalization appears three times in each bottleneck block, once after each convolution:
+$$ h_1 = \text{ReLU}(\text{BN}_1(W_1 \cdot x)) $$
+$$ h_2 = \text{ReLU}(\text{BN}_2(W_2 * h_1)) $$
+$$ h_3 = \text{BN}_3(W_3 \cdot h_2) $$
+&lt;strong&gt;Each BatchNorm serves a specific purpose:&lt;/strong&gt;
+• $ \text{BN}_1 $ (after $ 1 \times 1 $ compress): Normalizes the compressed representation before ReLU. Without this, the distribution shift from the channel reduction could cause most values to be negative (zeroed by ReLU), wasting capacity.
+• $ \text{BN}_2 $ (after $ 3 \times 3 $ process): Normalizes the spatially processed features. The $ 3 \times 3 $ convolution aggregates neighboring positions, which can create features with larger variance. BatchNorm resets the scale.
+• $ \text{BN}_3 $ (after $ 1 \times 1 $ expand): Normalizes the expanded representation before it is added to the skip connection. This is crucial: if $ h_3 $ has a very different scale from $ x $, the addition $ h_3 + x $ would be dominated by whichever term is larger. BatchNorm ensures both terms contribute meaningfully.
+&lt;strong&gt;Note on the final ReLU:&lt;/strong&gt;
+The ReLU after the addition ( $ y = \text{ReLU}(h_3 + x) $ ) is applied to the combined output. This means no BatchNorm appears between the addition and the final activation, keeping the skip connection as clean as possible (only one non-linearity on the shortcut path).
+&lt;/h2&gt;&lt;h2 id=&#34;why-deeper-networks-need-bottleneck-blocks&#34;&gt;Why Deeper Networks Need Bottleneck Blocks
+&lt;/h2&gt;&lt;p&gt;The relationship between network depth and block type is not arbitrary:
+&lt;strong&gt;Shallow networks (18-34 layers) use basic blocks because:&lt;/strong&gt;
+• Few enough blocks that the higher per-block cost is affordable
+• Simpler gradient flow through only two layers per block
+• Sufficient capacity without channel expansion ( 4 \times )
+&lt;strong&gt;Deep networks (50+ layers) use bottleneck blocks because:&lt;/strong&gt;
+• Many blocks require low per-block cost for tractability
+• The  17 \times  computational savings per block accumulate dramatically over 50+ layers
+• The  4 \times  channel expansion provides more capacity per parameter
+• The three-layer structure is not a disadvantage when skip connections handle gradient flow
+&lt;strong&gt;The depth-efficiency trade-off:&lt;/strong&gt;
+A ResNet-152 with basic blocks would require:
+&lt;/p&gt;
+$$
+ \text{FLOPs} \approx 17 \times 11.3\text{B} = 192\text{B FLOPs} 
+$$&lt;p&gt;
+This would be impractical. The bottleneck design makes 152-layer networks feasible at only 11.3B FLOPs, comparable to a 34-layer basic network (3.6B FLOPs) in terms of wall-clock training time per image.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

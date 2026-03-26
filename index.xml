@@ -2,18 +2,275 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Brown1729</title>
-        <link>https://brown1729.github.io/</link>
+        <link>http://localhost:1313/</link>
         <description>Recent content on Brown1729</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Brown1729</copyright>
-        <lastBuildDate>Wed, 10 Sep 2025 10:02:37 +0800</lastBuildDate><atom:link href="https://brown1729.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>ResNet 瓶颈架构</title>
+        <link>http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/</link>
+        <pubDate>Thu, 26 Mar 2026 19:37:00 +0800</pubDate>
+        
+        <guid>http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/</guid>
+        <description>&lt;img src="http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet 瓶颈架构" /&gt;&lt;h1 id=&#34;resnet---瓶颈架构&#34;&gt;ResNet - 瓶颈架构
+&lt;/h1&gt;&lt;h2 id=&#34;深度网络的计算挑战&#34;&gt;深度网络的计算挑战
+&lt;/h2&gt;&lt;p&gt;随着网络变得更深，每个残差块的计算成本成为一个关键问题。一个包含两个$ 3 \times 3 $卷积的基本块在256通道时的成本为：
+&lt;/p&gt;
+$$
+ \text{FLOPs}_{\text{basic}} = 2 \times (256 \times 256 \times 3 \times 3) \times H \times W = 1{,}179{,}648 \times H \times W 
+$$&lt;p&gt;对于在$ 14 \times 14 $特征图上有16个256通道块的ResNet-50，仅一个阶段就需要大约37亿FLOPs。使用基本块扩展到更深的网络（101、152层）在计算上是不可行的。&lt;/p&gt;
+&lt;p&gt;瓶颈块通过引入&amp;quot;压缩、处理、扩展&amp;quot;模式解决了这个问题，将计算量减少约8倍，同时保持甚至提高了表示能力。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;瓶颈架构&#34;&gt;瓶颈架构
+&lt;/h2&gt;&lt;p&gt;瓶颈块使用三个卷积而不是两个，中间进行通道压缩：
+&lt;/p&gt;
+$$
+ y = F_{\text{bottleneck}}(x) + x 
+$$&lt;p&gt;其中$ F_{\text{bottleneck}} $包含：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;层1：&lt;/strong&gt; $ 1 \times 1 $卷积（压缩）
+&lt;/p&gt;
+$$
+ h_1 = \text{ReLU}(\text{BN}(W_1 \cdot x)) 
+$$&lt;p&gt;
+将通道从$ C $减少到$ C/4 $。例如，256通道减少到64。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;层2：&lt;/strong&gt; $ 3 \times 3 $卷积（处理）
+&lt;/p&gt;
+$$
+ h_2 = \text{ReLU}(\text{BN}(W_2 * h_1)) 
+$$&lt;p&gt;
+在减少的通道数下执行空间处理。$ 3 \times 3 $核捕获空间模式，但在$ C/4 $通道而不是$ C $通道下。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;层3：&lt;/strong&gt; $ 1 \times 1 $卷积（扩展）
+&lt;/p&gt;
+$$
+ h_3 = \text{BN}(W_3 \cdot h_2) 
+$$&lt;p&gt;
+将通道从$ C/4 $扩展回$ C $。注意：此层后没有ReLU（ReLU在加上跳跃连接后应用）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;跳跃连接和激活：&lt;/strong&gt;
+&lt;/p&gt;
+$$
+ y = \text{ReLU}(h_3 + x) 
+$$&lt;hr&gt;
+&lt;h2 id=&#34;瓶颈为何节省计算&#34;&gt;瓶颈为何节省计算
+&lt;/h2&gt;&lt;p&gt;关键洞察是昂贵的$ 3 \times 3 $卷积在压缩表示上运行，使用$ C/4 $通道而不是$ C $通道。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;基本块FLOPs&lt;/strong&gt;（两个$ 3 \times 3 $卷积在$ C $通道）：
+&lt;/p&gt;
+$$ \text{FLOPs}_{\text{basic}} = 2 \times C^2 \times 9 \times H \times W = 18C^2 HW $$&lt;p&gt;&lt;strong&gt;瓶颈块FLOPs：&lt;/strong&gt;
+• $ 1 \times 1 $压缩（$ C \rightarrow C/4 $）：$ C \times C/4 \times 1 \times HW = C^2 HW/4 $
+• $ 3 \times 3 $处理（$ C/4 \rightarrow C/4 $）：$ (C/4)^2 \times 9 \times HW = 9C^2 HW/16 $
+• $ 1 \times 1 $扩展（$ C/4 \rightarrow C $）：$ C/4 \times C \times 1 \times HW = C^2 HW/4 $&lt;/p&gt;
+$$ \text{FLOPs}_{\text{bottleneck}} = C^2 HW \left(\frac{1}{4} + \frac{9}{16} + \frac{1}{4}\right) = C^2 HW \times \frac{17}{16} \approx 1.06 C^2 HW $$&lt;p&gt;&lt;strong&gt;比率：&lt;/strong&gt;
+&lt;/p&gt;
+$$
+ \frac{\text{FLOPs}_{\text{basic}}}{\text{FLOPs}_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17
+$$&lt;p&gt;瓶颈块在相同通道数下比基本块大约便宜17倍。这种巨大的节省使得ResNet-50、101和152变得实用。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;计算节省的实际例子&#34;&gt;计算节省的实际例子
+&lt;/h2&gt;&lt;p&gt;考虑阶段3的瓶颈块，$ C = 256 $通道，$ H \times W = 14 \times 14 $：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $压缩（$ 256 \rightarrow 64 $）：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 256 \times 64 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$&lt;p&gt;&lt;strong&gt;$ 3 \times 3 $处理（$ 64 \rightarrow 64 $）：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 64 \times 64 \times 9 \times 196 = 7{,}225{,}344 \text{ FLOPs} $$&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $扩展（$ 64 \rightarrow 256 $）：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 64 \times 256 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$&lt;p&gt;&lt;strong&gt;总瓶颈：&lt;/strong&gt; $ 13{,}647{,}872 $ FLOPs&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;等效基本块&lt;/strong&gt;（两个$ 3 \times 3 $在256通道）：
+&lt;/p&gt;
+$$ 2 \times 256 \times 256 \times 9 \times 196 = 231{,}211{,}008 \text{ FLOPs} $$&lt;p&gt;&lt;strong&gt;节省：&lt;/strong&gt; $ 231M / 13.6M \approx 17\times $&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-1-times-1-卷积&#34;&gt;$ 1 \times 1 $卷积
+&lt;/h2&gt;&lt;p&gt;$ 1 \times 1 $卷积（点卷积）是瓶颈设计的关键推动者。理解它至关重要。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $卷积的作用：&lt;/strong&gt;
+在每个空间位置$ (h, w) $，$ 1 \times 1 $卷积对通道向量应用线性变换：
+&lt;/p&gt;
+$$ y_{hw} = W \cdot x_{hw} + b $$&lt;p&gt;
+其中$ x_{hw} \in \mathbb{R}^{C_{in}} $是位置$ (h, w) $的输入特征向量，$ W \in \mathbb{R}^{C_{out} \times C_{in}} $是权重矩阵，$ y_{hw} \in \mathbb{R}^{C_{out}} $是输出。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;它不做什么：&lt;/strong&gt;
+• 不查看相邻空间位置（无空间感受野）
+• 不捕获空间模式（这是$ 3 \times 3 $卷积的工作）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;它擅长什么：&lt;/strong&gt;
+• 改变通道数（廉价地）
+• 学习特征通道的线性组合
+• 通道混合：每个输出通道是所有输入通道的加权和
+• 维度减少：将高维通道向量压缩到低维&lt;/p&gt;
+&lt;p&gt;Lin等人（2013）在Network-in-Network论文中引入了$ 1 \times 1 $卷积，GoogLeNet/Inception将其推广用于维度减少。ResNet的瓶颈设计使其成为架构的核心。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;压缩-扩展模式&#34;&gt;压缩-扩展模式
+&lt;/h2&gt;&lt;p&gt;瓶颈的&amp;quot;压缩、处理、扩展&amp;quot;模式在整个深度学习中出现：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在ResNet瓶颈块中：&lt;/strong&gt;
+&lt;/p&gt;
+$$ C\xrightarrow{1 \times 1} C/4 \xrightarrow{3 \times 3} C/4 \xrightarrow{1 \times 1} C $$&lt;p&gt;
+将通道压缩4倍，廉价地进行空间处理，扩展回来。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在MobileNet反向瓶颈中：&lt;/strong&gt;
+&lt;/p&gt;
+$$ C \xrightarrow{1 \times 1} 6C \xrightarrow{3 \times 3\, \text{深度}} 6C \xrightarrow{1 \times 1} C $$&lt;p&gt;
+相反方向：先扩展，处理，然后压缩。称为&amp;quot;反向&amp;quot;是因为宽的部分在中间。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在Transformer FFN中：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 
+d_{model} \xrightarrow{W_1} 4 \times d_{model} \xrightarrow{\text{ReLU}} 4 \times d_{model} \xrightarrow{W_2} d_{model}
+$$&lt;p&gt;
+扩展4倍，应用非线性，压缩回来。&lt;/p&gt;
+&lt;p&gt;**共同原则：**移动到不同的维度进行处理，然后返回原始维度。&amp;ldquo;工作维度&amp;quot;可以根据设计目标（计算节省vs.表示丰富度）更大或更小。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;瓶颈vs基本何时使用哪种&#34;&gt;瓶颈vs.基本：何时使用哪种
+&lt;/h2&gt;&lt;p&gt;ResNet论文根据模型深度使用两种不同的块类型：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;基本块&lt;/strong&gt;（用于ResNet-18和ResNet-34）：
+• 两个$ 3 \times 3 $卷积
+• 更简单的架构
+• 总层数较少但每块FLOPs更多
+• 适用于计算预算允许的较小模型&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;瓶颈块&lt;/strong&gt;（用于ResNet-50、101和152）：
+• 三个卷积（$ 1 \times 1 $, $ 3 \times 3 $, $ 1 \times 1 $）
+• 更多层但每块FLOPs更少
+• 适用于计算效率关键的深层模型&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;交叉点：&lt;/strong&gt;
+ResNet-34（基本块）：2180万参数，36亿FLOPs
+ResNet-50（瓶颈块）：2560万参数，38亿FLOPs&lt;/p&gt;
+&lt;p&gt;尽管有50层vs.34层，ResNet-50只有稍微更多的参数和FLOPs。这是因为瓶颈设计效率更高，50个瓶颈层的成本与34个基本层大致相同。&lt;/p&gt;
+&lt;p&gt;ResNet-50也表现明显更好（ImageNet上76.0% vs. 73.3% top-1准确率），表明瓶颈效率启用的额外深度直接转化为更好的性能。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;实际中的通道计数&#34;&gt;实际中的通道计数
+&lt;/h2&gt;&lt;p&gt;标准ResNet瓶颈使用4:1压缩比：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段1&lt;/strong&gt;（$ 56 \times 56 $）：
+• 输入/输出通道：256
+• 瓶颈通道：64
+• 压缩：$ 256 \rightarrow 64 \rightarrow 64 \rightarrow 256 $&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段2&lt;/strong&gt;（$ 28 \times 28 $）：
+• 输入/输出通道：512
+• 瓶颈通道：128
+• 压缩：$ 512 \rightarrow 128 \rightarrow 128 \rightarrow 512 $&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段3&lt;/strong&gt;（$ 14 \times 14 $）：
+• 输入/输出通道：1024
+• 瓶颈通道：256
+• 压缩：$ 1024 \rightarrow 256 \rightarrow 256 \rightarrow 1024 $&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段4&lt;/strong&gt;（$ 7 \times 7 $）：
+• 输入/输出通道：2048
+• 瓶颈通道：512
+• 压缩：$ 2048 \rightarrow 512 \rightarrow 512 \rightarrow 2048 $&lt;/p&gt;
+&lt;p&gt;注意瓶颈块的输入/输出通道是瓶颈通道的4倍。这就是为什么ResNet-50在其最终阶段有2048通道，而ResNet-34（使用基本块）只有512通道。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;扩展因子&#34;&gt;扩展因子
+&lt;/h2&gt;&lt;p&gt;比率$ C_{out} / C_{bn} $称为&lt;strong&gt;扩展因子&lt;/strong&gt;。在标准ResNet瓶颈中，这个因子是4：
+&lt;/p&gt;
+$$ C_{out} = 4 \times C_{bn} $$&lt;p&gt;&lt;strong&gt;为什么是4？&lt;/strong&gt;
+这是一个经验选择，提供了良好的权衡：
+• 太小（例如，扩展=1）：没有压缩优势，基本上是一个带额外层的基本块
+• 太大（例如，扩展=16）：激进的压缩可能在瓶颈中丢失太多信息
+• 扩展=4：$ 1 \times 1 $层廉价，$ 3 \times 3 $层可负担，压缩不会显著损害表示能力&lt;/p&gt;
+&lt;p&gt;后来的架构尝试了不同的扩展因子：
+• ResNeXt：使用分组卷积增加有效宽度，同时保持FLOPs不变
+• EfficientNet：使用可变扩展因子（1到6之间）通过神经架构搜索优化
+• RegNet：系统地研究设计空间，发现2-4左右的扩展因子是最优的&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;通过瓶颈的信息流&#34;&gt;通过瓶颈的信息流
+&lt;/h2&gt;&lt;p&gt;信息通过三层时会发生什么？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $压缩（信息瓶颈）：&lt;/strong&gt;
+256维特征向量投影到64维。这是一个有损压缩：网络必须学习256个特征中哪些64个线性组合最有信息量。投影学习保留与任务最相关的特征。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 3 \times 3 $处理（空间推理）：&lt;/strong&gt;
+在压缩空间中，$ 3 \times 3 $卷积查看相邻空间位置。它可以检测压缩特征空间中的边缘、纹理和模式。因为通道数小（64），这个操作很便宜。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $扩展（信息恢复）：&lt;/strong&gt;
+64维处理特征投影回256维。这种扩展允许网络将处理信息&amp;quot;扩散&amp;quot;到整个通道空间，创建丰富的输出表示。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;跳跃连接确保没有丢失：&lt;/strong&gt;
+即使瓶颈的压缩过于激进并丢弃了有用信息，跳跃连接也保留了完整的256维输入。输出$ y = F(x) + x $可以访问原始信息（$ x $）和瓶颈的处理贡献（$ F(x) $）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;参数数量分析&#34;&gt;参数数量分析
+&lt;/h2&gt;&lt;p&gt;对于输入/输出通道$ C $和瓶颈通道$ C/4 $的瓶颈块：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $压缩：&lt;/strong&gt;
+&lt;/p&gt;
+$$ P_1 = C \times C/4 = C^2/4 $$&lt;p&gt;&lt;strong&gt;$ 3 \times 3 $处理：&lt;/strong&gt;
+&lt;/p&gt;
+$$ P_2 = C/4 \times C/4 \times 9 = 9C^2/16 $$&lt;p&gt;&lt;strong&gt;$ 1 \times 1 $扩展：&lt;/strong&gt;
+&lt;/p&gt;
+$$ P_3 = C/4 \times C = C^2/4 $$&lt;p&gt;&lt;strong&gt;总计：&lt;/strong&gt;
+&lt;/p&gt;
+$$ P_{\text{bottleneck}} = C^2/4 + 9C^2/16 + C^2/4 = 17C^2/16 \approx 1.06C^2 $$&lt;p&gt;&lt;strong&gt;基本块（两个$ 3 \times 3 $）：&lt;/strong&gt;
+&lt;/p&gt;
+$$ P_{\text{basic}} = 2 \times C^2 \times 9 = 18C^2 $$&lt;p&gt;&lt;strong&gt;比率：&lt;/strong&gt;
+&lt;/p&gt;
+$$ \frac{P_{\text{basic}}}{P_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17 $$&lt;p&gt;瓶颈比基本块少17倍参数。这与计算节省的比率相同，因为FLOPs和参数都随通道维度和核大小的相同乘积缩放。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;resnet变体中的瓶颈块&#34;&gt;ResNet变体中的瓶颈块
+&lt;/h2&gt;&lt;p&gt;瓶颈块的数量在ResNet配置中不同：
+ResNet-50：3 + 4 + 6 + 3 = 16个瓶颈块
+ResNet-101：3 + 4 + 23 + 3 = 33个瓶颈块
+ResNet-152：3 + 8 + 36 + 3 = 50个瓶颈块&lt;/p&gt;
+&lt;p&gt;深度主要在阶段3（$ 14 \times 14 $分辨率阶段）增加。这是因为阶段3具有良好的空间分辨率平衡（足以捕获有意义的空间模式）和可管理的计算（空间上不太大，通道不太多）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;超越标准瓶颈&#34;&gt;超越标准瓶颈
+&lt;/h2&gt;&lt;p&gt;几个重要架构修改了瓶颈设计：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ResNeXt（2017）：&lt;/strong&gt;
+用$ G $个并行分组卷积替换单个$ 3 \times 3 $卷积：
+&lt;/p&gt;
+$$ F(x) = \sum_{i=1}^{G} W_3^{(i)} \cdot \text{ReLU}(\text{BN}(W_2^{(i)} * \text{ReLU}(\text{BN}(W_1^{(i)} \cdot x)))) $$&lt;p&gt;
+这增加了&amp;quot;基数&amp;rdquo;（并行路径数），同时保持FLOPs不变。ResNeXt-50在相同计算预算下优于ResNet-50。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;SE-ResNet（Squeeze-and-Excitation，2018）：&lt;/strong&gt;
+在瓶颈后添加通道注意力机制：
+&lt;/p&gt;
+$$ y = F(x) \cdot \text{SE}(F(x)) + x $$&lt;p&gt;
+SE模块学习根据重要性重新加权通道，添加很少参数。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EfficientNet（2019）：&lt;/strong&gt;
+使用神经架构搜索为网络中的每个块找到最优瓶颈配置（扩展比、核大小、通道数）。&lt;/p&gt;
+&lt;p&gt;这些扩展都建立在瓶颈的压缩-处理-扩展核心思想上，显示了这个设计模式的基本性和多功能性。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;通过瓶颈的梯度流&#34;&gt;通过瓶颈的梯度流
+&lt;/h2&gt;&lt;p&gt;瓶颈块中的梯度流遵循与基本块相同的残差原则，但在残差分支中有一个额外的层：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;前向：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 
+y = h_3 + x = (\text{BN}(W_3 \cdot \text{ReLU}(\text{BN}(W_2 * \text{ReLU}(\text{BN}(W_1 \cdot x)))))) + x 
+$$&lt;p&gt;&lt;strong&gt;反向（通过跳跃连接）：&lt;/strong&gt;
+&lt;/p&gt;
+$$ 
+\frac{\partial \mathcal{L}}{\partial x} = \frac{\partial \mathcal{L}}{\partial y} \cdot \left(\frac{\partial h_3}{\partial x} + I\right) 
+$$&lt;p&gt;恒等项$ I $提供梯度高速公路，就像在基本块中一样。残差分支的梯度现在通过三层而不是两层，但跳跃连接确保即使这个三层梯度很小，整体梯度仍然健康。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;三层梯度路径：&lt;/strong&gt;
+&lt;/p&gt;
+$$
+ \frac{\partial h_3}{\partial x} = \frac{\partial h_3}{\partial h_2} \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial x} 
+$$&lt;p&gt;每个因子涉及卷积雅可比和ReLU掩码。有三个乘法因子而不是两个（如基本块），通过瓶颈分支的残差梯度可能更小。然而，跳跃连接补偿：恒等梯度独立于分支中的层数。&lt;/p&gt;
+&lt;p&gt;这正是瓶颈设计工作的原因：跳跃连接的梯度总是1，无论残差分支中堆叠多少层。瓶颈的计算节省不会带来梯度流的任何成本。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;批归一化在瓶颈块中的作用&#34;&gt;批归一化在瓶颈块中的作用
+&lt;/h2&gt;&lt;p&gt;批归一化在每个瓶颈块中出现三次，每次卷积后一次：
+&lt;/p&gt;
+$$ h_1 = \text{ReLU}(\text{BN}_1(W_1 \cdot x)) $$&lt;p&gt;
+&lt;/p&gt;
+$$ h_2 = \text{ReLU}(\text{BN}_2(W_2 * h_1)) $$&lt;p&gt;
+&lt;/p&gt;
+$$ h_3 = \text{BN}_3(W_3 \cdot h_2) $$&lt;p&gt;&lt;strong&gt;每个BatchNorm有特定目的：&lt;/strong&gt;
+• $ \text{BN}_1 $（在$ 1 \times 1 $压缩后）：在ReLU之前归一化压缩表示。没有这个，通道减少的分布偏移可能导致大多数值为负（被ReLU归零），浪费容量。
+• $ \text{BN}_2 $（在$ 3 \times 3 $处理后）：归一化空间处理特征。$ 3 \times 3 $卷积聚合相邻位置，可能创建具有更大方差的特征。BatchNorm重置尺度。
+• $ \text{BN}_3 $（在$ 1 \times 1 $扩展后）：在添加到跳跃连接之前归一化扩展表示。这很关键：如果$ h_3 $与$ x $的尺度非常不同，加法$ h_3 + x $将被较大的项主导。BatchNorm确保两个项都有意义地贡献。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于最终ReLU的说明：&lt;/strong&gt;
+加法后的ReLU（$ y = \text{ReLU}(h_3 + x) $）应用于组合输出。这意味着在加法和最终激活之间没有BatchNorm，保持跳跃连接尽可能干净（快捷路径上只有一个非线性）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;为什么更深网络需要瓶颈块&#34;&gt;为什么更深网络需要瓶颈块
+&lt;/h2&gt;&lt;p&gt;网络深度和块类型之间的关系不是任意的：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;浅层网络（18-34层）使用基本块因为：&lt;/strong&gt;
+• 块数足够少，较高的每块成本可负担
+• 通过仅两层的更简单梯度流
+• 没有通道扩展的足够容量（$ 4 \times $）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;深层网络（50+层）使用瓶颈块因为：&lt;/strong&gt;
+• 许多块需要低每块成本以实现可处理性
+• 每块$ 17 \times $计算节省在50+层上显著累积
+• $ 4 \times $通道扩展提供每参数更多容量
+• 当跳跃连接处理梯度流时，三层结构不是劣势&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;深度-效率权衡：&lt;/strong&gt;
+具有基本块的ResNet-152需要：
+&lt;/p&gt;
+$$
+ \text{FLOPs} \approx 17 \times 11.3\text{B} = 192\text{B FLOPs} 
+$$&lt;p&gt;这将不实用。瓶颈设计使152层网络在仅113亿FLOPs下可行，在每图像墙钟训练时间方面与34层基本网络（36亿FLOPs）相当。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>三角形中一个恒等式的证明</title>
-        <link>https://brown1729.github.io/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</link>
+        <link>http://localhost:1313/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</link>
         <pubDate>Wed, 10 Sep 2025 10:02:37 +0800</pubDate>
         
-        <guid>https://brown1729.github.io/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</guid>
-        <description>&lt;img src="https://brown1729.github.io/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/illust_76510277_20191124_002755.jpg" alt="Featured image of post 三角形中一个恒等式的证明" /&gt;&lt;h2 id=&#34;定理&#34;&gt;定理
+        <guid>http://localhost:1313/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</guid>
+        <description>&lt;img src="http://localhost:1313/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/illust_76510277_20191124_002755.jpg" alt="Featured image of post 三角形中一个恒等式的证明" /&gt;&lt;h2 id=&#34;定理&#34;&gt;定理
 &lt;/h2&gt;&lt;p&gt;三角形$\triangle ABC$中，设角$A$、$B$、$C$所对的边分别为$a$、$b$、$c$。于是有
 &lt;/p&gt;
 $$
@@ -78,24 +335,13 @@ $$
 $$&lt;p align=&#34;right&#34;&gt;$\square$&lt;/p&gt;</description>
         </item>
         <item>
-        <title>我的第一个博客</title>
-        <link>https://brown1729.github.io/p/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</link>
-        <pubDate>Tue, 09 Sep 2025 20:24:38 +0800</pubDate>
-        
-        <guid>https://brown1729.github.io/p/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8D%9A%E5%AE%A2/</guid>
-        <description>&lt;h2 id=&#34;hello-world&#34;&gt;Hello World
-&lt;/h2&gt;</description>
-        </item>
-        <item>
         <title>关于</title>
-        <link>https://brown1729.github.io/%E5%85%B3%E4%BA%8E/</link>
+        <link>http://localhost:1313/%E5%85%B3%E4%BA%8E/</link>
         <pubDate>Tue, 09 Sep 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://brown1729.github.io/%E5%85%B3%E4%BA%8E/</guid>
+        <guid>http://localhost:1313/%E5%85%B3%E4%BA%8E/</guid>
         <description>&lt;h2 id=&#34;介绍&#34;&gt;介绍
-&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;本人对什么几乎都是“三分钟热度”，涉猎面广，但没有擅长的领域。
-学过很多语言，但现在全都可以被AI替代；了解过很多技术，但都停留在科普层面。
-如果你喜欢我的文章，就请一直喜欢吧&amp;gt;_&amp;lt;
+&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;这是我的个人博客，用于记录一些学习笔记和心得体会。
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&#34;成就&#34;&gt;成就
 &lt;/h2&gt;&lt;pre&gt;&lt;code&gt;无
@@ -108,26 +354,26 @@ $$&lt;p align=&#34;right&#34;&gt;$\square$&lt;/p&gt;</description>
         </item>
         <item>
         <title>文章</title>
-        <link>https://brown1729.github.io/archives/</link>
+        <link>http://localhost:1313/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>https://brown1729.github.io/archives/</guid>
+        <guid>http://localhost:1313/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>查找</title>
-        <link>https://brown1729.github.io/search/</link>
+        <link>http://localhost:1313/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://brown1729.github.io/search/</guid>
+        <guid>http://localhost:1313/search/</guid>
         <description></description>
         </item>
         <item>
         <title>链接</title>
-        <link>https://brown1729.github.io/%E9%93%BE%E6%8E%A5/</link>
+        <link>http://localhost:1313/%E9%93%BE%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://brown1729.github.io/%E9%93%BE%E6%8E%A5/</guid>
+        <guid>http://localhost:1313/%E9%93%BE%E6%8E%A5/</guid>
         <description></description>
         </item>
         

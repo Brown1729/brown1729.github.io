@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="ResNet的瓶颈架构（来自Tensortonic）">
+<title>ResNet 瓶颈架构</title>
+
+<link rel='canonical' href='http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="ResNet 瓶颈架构">
+<meta property='og:description' content="ResNet的瓶颈架构（来自Tensortonic）">
+<meta property='og:url' content='http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/'>
+<meta property='og:site_name' content='Brown1729'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-26T19:37:00&#43;08:00'/><meta property='article:modified_time' content='2026-03-26T19:37:00&#43;08:00'/><meta property='og:image' content='http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg' />
+<meta name="twitter:title" content="ResNet 瓶颈架构">
+<meta name="twitter:description" content="ResNet的瓶颈架构（来自Tensortonic）"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a91902b755228bb.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😴</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Brown1729</a></h1>
+            <h2 class="site-description">岁月为百代之过客。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/273395527'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Brown1729'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/BrownZ1729'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://www.zhihu.com/people/fan-hua-84-11'
+                        target="_blank"
+                        title="Zhihu"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-zhihu"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6h6v12h-2l-2 2l-1 -2h-1z" /><path d="M4 12h6.5" /><path d="M10.5 6h-5" /><path d="M6 4c-.5 2.5 -1.5 3.5 -2.5 4.5" /><path d="M8 6v7c0 4.5 -2 5.5 -4 7" /><path d="M11 18l-3 -5" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>查找</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#深度网络的计算挑战">深度网络的计算挑战</a></li>
+    <li><a href="#瓶颈架构">瓶颈架构</a></li>
+    <li><a href="#瓶颈为何节省计算">瓶颈为何节省计算</a></li>
+    <li><a href="#计算节省的实际例子">计算节省的实际例子</a></li>
+    <li><a href="#-1-times-1-卷积">$ 1 \times 1 $卷积</a></li>
+    <li><a href="#压缩-扩展模式">压缩-扩展模式</a></li>
+    <li><a href="#瓶颈vs基本何时使用哪种">瓶颈vs.基本：何时使用哪种</a></li>
+    <li><a href="#实际中的通道计数">实际中的通道计数</a></li>
+    <li><a href="#扩展因子">扩展因子</a></li>
+    <li><a href="#通过瓶颈的信息流">通过瓶颈的信息流</a></li>
+    <li><a href="#参数数量分析">参数数量分析</a></li>
+    <li><a href="#resnet变体中的瓶颈块">ResNet变体中的瓶颈块</a></li>
+    <li><a href="#超越标准瓶颈">超越标准瓶颈</a></li>
+    <li><a href="#通过瓶颈的梯度流">通过瓶颈的梯度流</a></li>
+    <li><a href="#批归一化在瓶颈块中的作用">批归一化在瓶颈块中的作用</a></li>
+    <li><a href="#为什么更深网络需要瓶颈块">为什么更深网络需要瓶颈块</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/">
+                <img src="/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0_hu_295bda98d71b0915.jpg"
+                        srcset="/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0_hu_295bda98d71b0915.jpg 800w, /p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0_hu_ffca5f65b598ffd2.jpg 1600w"
+                        width="800" 
+                        height="1106" 
+                        loading="lazy"
+                        alt="Featured image of post ResNet 瓶颈架构" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" style="background-color: #3b82f6; color: #fff;">
+                深度学习
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/">ResNet 瓶颈架构</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            ResNet的瓶颈架构（来自Tensortonic）
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Mar 26, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 10 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/en/p/resnet-bottleneck-architecture/" class="link">English</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="resnet---瓶颈架构">ResNet - 瓶颈架构
+</h1><h2 id="深度网络的计算挑战">深度网络的计算挑战
+</h2><p>随着网络变得更深，每个残差块的计算成本成为一个关键问题。一个包含两个$ 3 \times 3 $卷积的基本块在256通道时的成本为：
+</p>
+$$
+ \text{FLOPs}_{\text{basic}} = 2 \times (256 \times 256 \times 3 \times 3) \times H \times W = 1{,}179{,}648 \times H \times W 
+$$<p>对于在$ 14 \times 14 $特征图上有16个256通道块的ResNet-50，仅一个阶段就需要大约37亿FLOPs。使用基本块扩展到更深的网络（101、152层）在计算上是不可行的。</p>
+<p>瓶颈块通过引入&quot;压缩、处理、扩展&quot;模式解决了这个问题，将计算量减少约8倍，同时保持甚至提高了表示能力。</p>
+<hr>
+<h2 id="瓶颈架构">瓶颈架构
+</h2><p>瓶颈块使用三个卷积而不是两个，中间进行通道压缩：
+</p>
+$$
+ y = F_{\text{bottleneck}}(x) + x 
+$$<p>其中$ F_{\text{bottleneck}} $包含：</p>
+<p><strong>层1：</strong> $ 1 \times 1 $卷积（压缩）
+</p>
+$$
+ h_1 = \text{ReLU}(\text{BN}(W_1 \cdot x)) 
+$$<p>
+将通道从$ C $减少到$ C/4 $。例如，256通道减少到64。</p>
+<p><strong>层2：</strong> $ 3 \times 3 $卷积（处理）
+</p>
+$$
+ h_2 = \text{ReLU}(\text{BN}(W_2 * h_1)) 
+$$<p>
+在减少的通道数下执行空间处理。$ 3 \times 3 $核捕获空间模式，但在$ C/4 $通道而不是$ C $通道下。</p>
+<p><strong>层3：</strong> $ 1 \times 1 $卷积（扩展）
+</p>
+$$
+ h_3 = \text{BN}(W_3 \cdot h_2) 
+$$<p>
+将通道从$ C/4 $扩展回$ C $。注意：此层后没有ReLU（ReLU在加上跳跃连接后应用）。</p>
+<p><strong>跳跃连接和激活：</strong>
+</p>
+$$
+ y = \text{ReLU}(h_3 + x) 
+$$<hr>
+<h2 id="瓶颈为何节省计算">瓶颈为何节省计算
+</h2><p>关键洞察是昂贵的$ 3 \times 3 $卷积在压缩表示上运行，使用$ C/4 $通道而不是$ C $通道。</p>
+<p><strong>基本块FLOPs</strong>（两个$ 3 \times 3 $卷积在$ C $通道）：
+</p>
+$$ \text{FLOPs}_{\text{basic}} = 2 \times C^2 \times 9 \times H \times W = 18C^2 HW $$<p><strong>瓶颈块FLOPs：</strong>
+• $ 1 \times 1 $压缩（$ C \rightarrow C/4 $）：$ C \times C/4 \times 1 \times HW = C^2 HW/4 $
+• $ 3 \times 3 $处理（$ C/4 \rightarrow C/4 $）：$ (C/4)^2 \times 9 \times HW = 9C^2 HW/16 $
+• $ 1 \times 1 $扩展（$ C/4 \rightarrow C $）：$ C/4 \times C \times 1 \times HW = C^2 HW/4 $</p>
+$$ \text{FLOPs}_{\text{bottleneck}} = C^2 HW \left(\frac{1}{4} + \frac{9}{16} + \frac{1}{4}\right) = C^2 HW \times \frac{17}{16} \approx 1.06 C^2 HW $$<p><strong>比率：</strong>
+</p>
+$$
+ \frac{\text{FLOPs}_{\text{basic}}}{\text{FLOPs}_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17
+$$<p>瓶颈块在相同通道数下比基本块大约便宜17倍。这种巨大的节省使得ResNet-50、101和152变得实用。</p>
+<hr>
+<h2 id="计算节省的实际例子">计算节省的实际例子
+</h2><p>考虑阶段3的瓶颈块，$ C = 256 $通道，$ H \times W = 14 \times 14 $：</p>
+<p><strong>$ 1 \times 1 $压缩（$ 256 \rightarrow 64 $）：</strong>
+</p>
+$$ 256 \times 64 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$<p><strong>$ 3 \times 3 $处理（$ 64 \rightarrow 64 $）：</strong>
+</p>
+$$ 64 \times 64 \times 9 \times 196 = 7{,}225{,}344 \text{ FLOPs} $$<p><strong>$ 1 \times 1 $扩展（$ 64 \rightarrow 256 $）：</strong>
+</p>
+$$ 64 \times 256 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$<p><strong>总瓶颈：</strong> $ 13{,}647{,}872 $ FLOPs</p>
+<p><strong>等效基本块</strong>（两个$ 3 \times 3 $在256通道）：
+</p>
+$$ 2 \times 256 \times 256 \times 9 \times 196 = 231{,}211{,}008 \text{ FLOPs} $$<p><strong>节省：</strong> $ 231M / 13.6M \approx 17\times $</p>
+<hr>
+<h2 id="-1-times-1-卷积">$ 1 \times 1 $卷积
+</h2><p>$ 1 \times 1 $卷积（点卷积）是瓶颈设计的关键推动者。理解它至关重要。</p>
+<p><strong>$ 1 \times 1 $卷积的作用：</strong>
+在每个空间位置$ (h, w) $，$ 1 \times 1 $卷积对通道向量应用线性变换：
+</p>
+$$ y_{hw} = W \cdot x_{hw} + b $$<p>
+其中$ x_{hw} \in \mathbb{R}^{C_{in}} $是位置$ (h, w) $的输入特征向量，$ W \in \mathbb{R}^{C_{out} \times C_{in}} $是权重矩阵，$ y_{hw} \in \mathbb{R}^{C_{out}} $是输出。</p>
+<p><strong>它不做什么：</strong>
+• 不查看相邻空间位置（无空间感受野）
+• 不捕获空间模式（这是$ 3 \times 3 $卷积的工作）</p>
+<p><strong>它擅长什么：</strong>
+• 改变通道数（廉价地）
+• 学习特征通道的线性组合
+• 通道混合：每个输出通道是所有输入通道的加权和
+• 维度减少：将高维通道向量压缩到低维</p>
+<p>Lin等人（2013）在Network-in-Network论文中引入了$ 1 \times 1 $卷积，GoogLeNet/Inception将其推广用于维度减少。ResNet的瓶颈设计使其成为架构的核心。</p>
+<hr>
+<h2 id="压缩-扩展模式">压缩-扩展模式
+</h2><p>瓶颈的&quot;压缩、处理、扩展&quot;模式在整个深度学习中出现：</p>
+<p><strong>在ResNet瓶颈块中：</strong>
+</p>
+$$ C\xrightarrow{1 \times 1} C/4 \xrightarrow{3 \times 3} C/4 \xrightarrow{1 \times 1} C $$<p>
+将通道压缩4倍，廉价地进行空间处理，扩展回来。</p>
+<p><strong>在MobileNet反向瓶颈中：</strong>
+</p>
+$$ C \xrightarrow{1 \times 1} 6C \xrightarrow{3 \times 3\, \text{深度}} 6C \xrightarrow{1 \times 1} C $$<p>
+相反方向：先扩展，处理，然后压缩。称为&quot;反向&quot;是因为宽的部分在中间。</p>
+<p><strong>在Transformer FFN中：</strong>
+</p>
+$$ 
+d_{model} \xrightarrow{W_1} 4 \times d_{model} \xrightarrow{\text{ReLU}} 4 \times d_{model} \xrightarrow{W_2} d_{model}
+$$<p>
+扩展4倍，应用非线性，压缩回来。</p>
+<p>**共同原则：**移动到不同的维度进行处理，然后返回原始维度。&ldquo;工作维度&quot;可以根据设计目标（计算节省vs.表示丰富度）更大或更小。</p>
+<hr>
+<h2 id="瓶颈vs基本何时使用哪种">瓶颈vs.基本：何时使用哪种
+</h2><p>ResNet论文根据模型深度使用两种不同的块类型：</p>
+<p><strong>基本块</strong>（用于ResNet-18和ResNet-34）：
+• 两个$ 3 \times 3 $卷积
+• 更简单的架构
+• 总层数较少但每块FLOPs更多
+• 适用于计算预算允许的较小模型</p>
+<p><strong>瓶颈块</strong>（用于ResNet-50、101和152）：
+• 三个卷积（$ 1 \times 1 $, $ 3 \times 3 $, $ 1 \times 1 $）
+• 更多层但每块FLOPs更少
+• 适用于计算效率关键的深层模型</p>
+<p><strong>交叉点：</strong>
+ResNet-34（基本块）：2180万参数，36亿FLOPs
+ResNet-50（瓶颈块）：2560万参数，38亿FLOPs</p>
+<p>尽管有50层vs.34层，ResNet-50只有稍微更多的参数和FLOPs。这是因为瓶颈设计效率更高，50个瓶颈层的成本与34个基本层大致相同。</p>
+<p>ResNet-50也表现明显更好（ImageNet上76.0% vs. 73.3% top-1准确率），表明瓶颈效率启用的额外深度直接转化为更好的性能。</p>
+<hr>
+<h2 id="实际中的通道计数">实际中的通道计数
+</h2><p>标准ResNet瓶颈使用4:1压缩比：</p>
+<p><strong>阶段1</strong>（$ 56 \times 56 $）：
+• 输入/输出通道：256
+• 瓶颈通道：64
+• 压缩：$ 256 \rightarrow 64 \rightarrow 64 \rightarrow 256 $</p>
+<p><strong>阶段2</strong>（$ 28 \times 28 $）：
+• 输入/输出通道：512
+• 瓶颈通道：128
+• 压缩：$ 512 \rightarrow 128 \rightarrow 128 \rightarrow 512 $</p>
+<p><strong>阶段3</strong>（$ 14 \times 14 $）：
+• 输入/输出通道：1024
+• 瓶颈通道：256
+• 压缩：$ 1024 \rightarrow 256 \rightarrow 256 \rightarrow 1024 $</p>
+<p><strong>阶段4</strong>（$ 7 \times 7 $）：
+• 输入/输出通道：2048
+• 瓶颈通道：512
+• 压缩：$ 2048 \rightarrow 512 \rightarrow 512 \rightarrow 2048 $</p>
+<p>注意瓶颈块的输入/输出通道是瓶颈通道的4倍。这就是为什么ResNet-50在其最终阶段有2048通道，而ResNet-34（使用基本块）只有512通道。</p>
+<hr>
+<h2 id="扩展因子">扩展因子
+</h2><p>比率$ C_{out} / C_{bn} $称为<strong>扩展因子</strong>。在标准ResNet瓶颈中，这个因子是4：
+</p>
+$$ C_{out} = 4 \times C_{bn} $$<p><strong>为什么是4？</strong>
+这是一个经验选择，提供了良好的权衡：
+• 太小（例如，扩展=1）：没有压缩优势，基本上是一个带额外层的基本块
+• 太大（例如，扩展=16）：激进的压缩可能在瓶颈中丢失太多信息
+• 扩展=4：$ 1 \times 1 $层廉价，$ 3 \times 3 $层可负担，压缩不会显著损害表示能力</p>
+<p>后来的架构尝试了不同的扩展因子：
+• ResNeXt：使用分组卷积增加有效宽度，同时保持FLOPs不变
+• EfficientNet：使用可变扩展因子（1到6之间）通过神经架构搜索优化
+• RegNet：系统地研究设计空间，发现2-4左右的扩展因子是最优的</p>
+<hr>
+<h2 id="通过瓶颈的信息流">通过瓶颈的信息流
+</h2><p>信息通过三层时会发生什么？</p>
+<p><strong>$ 1 \times 1 $压缩（信息瓶颈）：</strong>
+256维特征向量投影到64维。这是一个有损压缩：网络必须学习256个特征中哪些64个线性组合最有信息量。投影学习保留与任务最相关的特征。</p>
+<p><strong>$ 3 \times 3 $处理（空间推理）：</strong>
+在压缩空间中，$ 3 \times 3 $卷积查看相邻空间位置。它可以检测压缩特征空间中的边缘、纹理和模式。因为通道数小（64），这个操作很便宜。</p>
+<p><strong>$ 1 \times 1 $扩展（信息恢复）：</strong>
+64维处理特征投影回256维。这种扩展允许网络将处理信息&quot;扩散&quot;到整个通道空间，创建丰富的输出表示。</p>
+<p><strong>跳跃连接确保没有丢失：</strong>
+即使瓶颈的压缩过于激进并丢弃了有用信息，跳跃连接也保留了完整的256维输入。输出$ y = F(x) + x $可以访问原始信息（$ x $）和瓶颈的处理贡献（$ F(x) $）。</p>
+<hr>
+<h2 id="参数数量分析">参数数量分析
+</h2><p>对于输入/输出通道$ C $和瓶颈通道$ C/4 $的瓶颈块：</p>
+<p><strong>$ 1 \times 1 $压缩：</strong>
+</p>
+$$ P_1 = C \times C/4 = C^2/4 $$<p><strong>$ 3 \times 3 $处理：</strong>
+</p>
+$$ P_2 = C/4 \times C/4 \times 9 = 9C^2/16 $$<p><strong>$ 1 \times 1 $扩展：</strong>
+</p>
+$$ P_3 = C/4 \times C = C^2/4 $$<p><strong>总计：</strong>
+</p>
+$$ P_{\text{bottleneck}} = C^2/4 + 9C^2/16 + C^2/4 = 17C^2/16 \approx 1.06C^2 $$<p><strong>基本块（两个$ 3 \times 3 $）：</strong>
+</p>
+$$ P_{\text{basic}} = 2 \times C^2 \times 9 = 18C^2 $$<p><strong>比率：</strong>
+</p>
+$$ \frac{P_{\text{basic}}}{P_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17 $$<p>瓶颈比基本块少17倍参数。这与计算节省的比率相同，因为FLOPs和参数都随通道维度和核大小的相同乘积缩放。</p>
+<hr>
+<h2 id="resnet变体中的瓶颈块">ResNet变体中的瓶颈块
+</h2><p>瓶颈块的数量在ResNet配置中不同：
+ResNet-50：3 + 4 + 6 + 3 = 16个瓶颈块
+ResNet-101：3 + 4 + 23 + 3 = 33个瓶颈块
+ResNet-152：3 + 8 + 36 + 3 = 50个瓶颈块</p>
+<p>深度主要在阶段3（$ 14 \times 14 $分辨率阶段）增加。这是因为阶段3具有良好的空间分辨率平衡（足以捕获有意义的空间模式）和可管理的计算（空间上不太大，通道不太多）。</p>
+<hr>
+<h2 id="超越标准瓶颈">超越标准瓶颈
+</h2><p>几个重要架构修改了瓶颈设计：</p>
+<p><strong>ResNeXt（2017）：</strong>
+用$ G $个并行分组卷积替换单个$ 3 \times 3 $卷积：
+</p>
+$$ F(x) = \sum_{i=1}^{G} W_3^{(i)} \cdot \text{ReLU}(\text{BN}(W_2^{(i)} * \text{ReLU}(\text{BN}(W_1^{(i)} \cdot x)))) $$<p>
+这增加了&quot;基数&rdquo;（并行路径数），同时保持FLOPs不变。ResNeXt-50在相同计算预算下优于ResNet-50。</p>
+<p><strong>SE-ResNet（Squeeze-and-Excitation，2018）：</strong>
+在瓶颈后添加通道注意力机制：
+</p>
+$$ y = F(x) \cdot \text{SE}(F(x)) + x $$<p>
+SE模块学习根据重要性重新加权通道，添加很少参数。</p>
+<p><strong>EfficientNet（2019）：</strong>
+使用神经架构搜索为网络中的每个块找到最优瓶颈配置（扩展比、核大小、通道数）。</p>
+<p>这些扩展都建立在瓶颈的压缩-处理-扩展核心思想上，显示了这个设计模式的基本性和多功能性。</p>
+<hr>
+<h2 id="通过瓶颈的梯度流">通过瓶颈的梯度流
+</h2><p>瓶颈块中的梯度流遵循与基本块相同的残差原则，但在残差分支中有一个额外的层：</p>
+<p><strong>前向：</strong>
+</p>
+$$ 
+y = h_3 + x = (\text{BN}(W_3 \cdot \text{ReLU}(\text{BN}(W_2 * \text{ReLU}(\text{BN}(W_1 \cdot x)))))) + x 
+$$<p><strong>反向（通过跳跃连接）：</strong>
+</p>
+$$ 
+\frac{\partial \mathcal{L}}{\partial x} = \frac{\partial \mathcal{L}}{\partial y} \cdot \left(\frac{\partial h_3}{\partial x} + I\right) 
+$$<p>恒等项$ I $提供梯度高速公路，就像在基本块中一样。残差分支的梯度现在通过三层而不是两层，但跳跃连接确保即使这个三层梯度很小，整体梯度仍然健康。</p>
+<p><strong>三层梯度路径：</strong>
+</p>
+$$
+ \frac{\partial h_3}{\partial x} = \frac{\partial h_3}{\partial h_2} \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial x} 
+$$<p>每个因子涉及卷积雅可比和ReLU掩码。有三个乘法因子而不是两个（如基本块），通过瓶颈分支的残差梯度可能更小。然而，跳跃连接补偿：恒等梯度独立于分支中的层数。</p>
+<p>这正是瓶颈设计工作的原因：跳跃连接的梯度总是1，无论残差分支中堆叠多少层。瓶颈的计算节省不会带来梯度流的任何成本。</p>
+<hr>
+<h2 id="批归一化在瓶颈块中的作用">批归一化在瓶颈块中的作用
+</h2><p>批归一化在每个瓶颈块中出现三次，每次卷积后一次：
+</p>
+$$ h_1 = \text{ReLU}(\text{BN}_1(W_1 \cdot x)) $$<p>
+</p>
+$$ h_2 = \text{ReLU}(\text{BN}_2(W_2 * h_1)) $$<p>
+</p>
+$$ h_3 = \text{BN}_3(W_3 \cdot h_2) $$<p><strong>每个BatchNorm有特定目的：</strong>
+• $ \text{BN}_1 $（在$ 1 \times 1 $压缩后）：在ReLU之前归一化压缩表示。没有这个，通道减少的分布偏移可能导致大多数值为负（被ReLU归零），浪费容量。
+• $ \text{BN}_2 $（在$ 3 \times 3 $处理后）：归一化空间处理特征。$ 3 \times 3 $卷积聚合相邻位置，可能创建具有更大方差的特征。BatchNorm重置尺度。
+• $ \text{BN}_3 $（在$ 1 \times 1 $扩展后）：在添加到跳跃连接之前归一化扩展表示。这很关键：如果$ h_3 $与$ x $的尺度非常不同，加法$ h_3 + x $将被较大的项主导。BatchNorm确保两个项都有意义地贡献。</p>
+<p><strong>关于最终ReLU的说明：</strong>
+加法后的ReLU（$ y = \text{ReLU}(h_3 + x) $）应用于组合输出。这意味着在加法和最终激活之间没有BatchNorm，保持跳跃连接尽可能干净（快捷路径上只有一个非线性）。</p>
+<hr>
+<h2 id="为什么更深网络需要瓶颈块">为什么更深网络需要瓶颈块
+</h2><p>网络深度和块类型之间的关系不是任意的：</p>
+<p><strong>浅层网络（18-34层）使用基本块因为：</strong>
+• 块数足够少，较高的每块成本可负担
+• 通过仅两层的更简单梯度流
+• 没有通道扩展的足够容量（$ 4 \times $）</p>
+<p><strong>深层网络（50+层）使用瓶颈块因为：</strong>
+• 许多块需要低每块成本以实现可处理性
+• 每块$ 17 \times $计算节省在50+层上显著累积
+• $ 4 \times $通道扩展提供每参数更多容量
+• 当跳跃连接处理梯度流时，三层结构不是劣势</p>
+<p><strong>深度-效率权衡：</strong>
+具有基本块的ResNet-152需要：
+</p>
+$$
+ \text{FLOPs} \approx 17 \times 11.3\text{B} = 192\text{B FLOPs} 
+$$<p>这将不实用。瓶颈设计使152层网络在仅113亿FLOPs下可行，在每图像墙钟训练时间方面与34层基本网络（36亿FLOPs）相当。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script src="https://utteranc.es/client.js" 
+        repo=""
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    let utterancesLoaded = false;
+
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+
+        
+        utterancesLoaded = true;
+        setUtterancesTheme(document.documentElement.dataset.scheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (!utterancesLoaded) return;
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy;
+        
+        2025 -
+        
+        2026 Brown1729
+    </section>
+
+    <section class="powerby">
+        
+        <p>欢迎访问我的 <b><a href="https://brown1729.github.io/" target="_blank" rel="noopener">个人博客</a></b>
+        </p>
+        
+    </section>
+</footer>
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.df35fcf152abfc5ef2a69421ab5ee7c134ed69ad96b84ee09f95120316921453.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

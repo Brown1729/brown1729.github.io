@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="The Bottleneck Architecture of ResNet (From Tensortonic)">
+<title>ResNet Bottleneck Architecture</title>
+
+<link rel='canonical' href='http://localhost:1313/p/resnet-bottleneck-architecture/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="ResNet Bottleneck Architecture">
+<meta property='og:description' content="The Bottleneck Architecture of ResNet (From Tensortonic)">
+<meta property='og:url' content='http://localhost:1313/p/resnet-bottleneck-architecture/'>
+<meta property='og:site_name' content='Brown1729'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-26T19:37:00&#43;08:00'/><meta property='article:modified_time' content='2026-03-26T19:37:00&#43;08:00'/><meta property='og:image' content='http://localhost:1313/p/resnet-bottleneck-architecture/130852450_p0.jpg' />
+<meta name="twitter:title" content="ResNet Bottleneck Architecture">
+<meta name="twitter:description" content="The Bottleneck Architecture of ResNet (From Tensortonic)"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/p/resnet-bottleneck-architecture/130852450_p0.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a91902b755228bb.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😴</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Brown1729</a></h1>
+            <h2 class="site-description">岁月为百代之过客。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/273395527'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Brown1729'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/BrownZ1729'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://www.zhihu.com/people/fan-hua-84-11'
+                        target="_blank"
+                        title="Zhihu"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-zhihu"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6h6v12h-2l-2 2l-1 -2h-1z" /><path d="M4 12h6.5" /><path d="M10.5 6h-5" /><path d="M6 4c-.5 2.5 -1.5 3.5 -2.5 4.5" /><path d="M8 6v7c0 4.5 -2 5.5 -4 7" /><path d="M11 18l-3 -5" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>查找</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#the-computational-challenge-of-going-deep">The Computational Challenge of Going Deep</a></li>
+    <li><a href="#the-bottleneck-block-solves-this-by-introducing-a-compress-process-expand-pattern-that-reduces-computation-by-a-factor-of-roughly-8-while-maintaining-or-even-increasing-representational-power">As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:
+
+For ResNet-50 with 16 blocks at 256 channels on a $ 14 \times 14 $ feature map, this is roughly 3.7 billion FLOPs just for one stage. Scaling to deeper networks (101, 152 layers) with basic blocks would be computationally prohibitive.
+The bottleneck block solves this by introducing a &ldquo;compress, process, expand&rdquo; pattern that reduces computation by a factor of roughly 8 while maintaining or even increasing representational power.</a></li>
+    <li><a href="#the-bottleneck-architecture">The Bottleneck Architecture</a></li>
+    <li><a href="#">The bottleneck block uses three convolutions instead of two, with a channel compression in the middle:
+
+where $ F_{\text{bottleneck}} $ consists of:
+Layer 1: $ 1 \times 1 $ convolution (compress)
+
+Reduces channels from $ C $ to $ C/4 $. For example, 256 channels to 64.
+Layer 2: $ 3 \times 3 $ convolution (process)
+
+Performs spatial processing at the reduced channel count. The $ 3 \times 3 $ kernel captures spatial patterns, but at $ C/4 $ channels instead of $ C $.
+Layer 3: $ 1 \times 1 $ convolution (expand)
+
+Expands channels back from $ C/4 $ to $ C $. Note: no ReLU after this layer (the ReLU comes after the addition with the skip connection).
+Skip connection and activation:
+</a></li>
+    <li><a href="#why-the-bottleneck-saves-computation">Why the Bottleneck Saves Computation</a></li>
+    <li><a href="#the-bottleneck-block-is-roughly-17-times-cheaper-than-the-basic-block-at-the-same-channel-count-this-massive-savings-is-what-enables-resnet-50-101-and-152-to-be-practical">The key insight is that the expensive $ 3 \times 3 $ convolution operates on a compressed representation with $ C/4 $ channels instead of $ C $ channels.
+Basic block FLOPs (two $ 3 \times 3 $ convolutions at $ C $ channels):
+
+Bottleneck block FLOPs:
+• $ 1 \times 1 $ compress ($ C \rightarrow C/4 $): $ C \times C/4 \times 1 \times HW = C^2 HW/4 $
+• $ 3 \times 3 $ process ($ C/4 \rightarrow C/4 $): $ (C/4)^2 \times 9 \times HW = 9C^2 HW/16 $
+• $ 1 \times 1 $ expand ($ C/4 \rightarrow C $): $ C/4 \times C \times 1 \times HW = C^2 HW/4 $
+
+Ratio:
+
+The bottleneck block is roughly 17 times cheaper than the basic block at the same channel count. This massive savings is what enables ResNet-50, 101, and 152 to be practical.</a></li>
+    <li><a href="#worked-example-computational-savings">Worked Example: Computational Savings</a></li>
+    <li><a href="#savings--231m--136m-approx-17times-">Consider a bottleneck block at stage 3 with $ C = 256 $ channels and $ H \times W = 14 \times 14 $:
+$ 1 \times 1 $ compress ($ 256 \rightarrow 64 $):
+
+$ 3 \times 3 $ process ($ 64 \rightarrow 64 $):
+
+$ 1 \times 1 $ expand ($ 64 \rightarrow 256 $):
+
+Total bottleneck: $ 13{,}647{,}872 $ FLOPs
+Equivalent basic block (two $ 3 \times 3 $ at 256 channels):
+
+Savings: $ 231M / 13.6M \approx 17\times $</a></li>
+    <li><a href="#lin-et-al-2013-introduced--1-times-1--convolutions-in-the-network-in-network-paper-and-googlenetinception-popularized-them-for-dimension-reduction-resnets-bottleneck-design-makes-them-central-to-the-architecture">The $ 1 \times 1 $ Convolution The $ 1 \times 1 $ convolution (pointwise convolution) is the key enabler of the bottleneck design. Understanding it is essential. What a $ 1 \times 1 $ convolution does: At each spatial position $ (h, w) $, the $ 1 \times 1 $ convolution applies a linear transformation to the channel vector: where $ x_{hw} \in \mathbb{R}^{C_{in}} $ is the input feature vector at position $ (h, w) $, $ W \in \mathbb{R}^{C_{out} \times C_{in}} $ is the weight matrix, and $ y_{hw} \in \mathbb{R}^{C_{out}} $ is the output. <strong>What it does NOT do:</strong> • It does not look at neighboring spatial positions (no spatial receptive field) • It does not capture spatial patterns (that is the 3 \times 3 convolution’s job) <strong>What it is good at:</strong> • Changing the number of channels (cheaply) • Learning linear combinations of feature channels • Channel mixing: each output channel is a weighted sum of all input channels • Dimensionality reduction: compressing a high-dimensional channel vector into a lower-dimensional one Lin et al. (2013) introduced $ 1 \times 1 $ convolutions in the Network-in-Network paper, and GoogLeNet/Inception popularized them for dimension reduction. ResNet’s bottleneck design makes them central to the architecture.</a></li>
+    <li><a href="#the-compression-expansion-pattern">The Compression-Expansion Pattern</a></li>
+    <li><a href="#the-common-principle-move-to-a-different-dimensionality-for-processing-then-return-to-the-original-dimensionality-the-working-dimension-can-be-larger-or-smaller-depending-on-the-design-goals-computational-savings-vs-representational-richness">The bottleneck’s “compress, process, expand” pattern appears throughout deep learning: <strong>In ResNet bottleneck blocks:</strong> Compress channels by 4x, do spatial processing cheaply, expand back. <strong>In MobileNet inverted bottlenecks:</strong> The opposite direction: expand first, process, then compress. Called “inverted” because the wide part is in the middle. <strong>In Transformer FFN:</strong> Expand by 4x, apply non-linearity, compress back. The common principle: move to a different dimensionality for processing, then return to the original dimensionality. The “working dimension” can be larger or smaller depending on the design goals (computational savings vs. representational richness).</a></li>
+    <li><a href="#bottleneck-vs-basic-when-to-use-which">Bottleneck vs. Basic: When to Use Which</a></li>
+    <li><a href="#resnet-50-also-performs-significantly-better-760-vs-733-top-1-accuracy-on-imagenet-showing-that-the-extra-depth-enabled-by-bottleneck-efficiency-translates-directly-into-better-performance">The ResNet paper uses two different block types depending on model depth: <strong>Basic block</strong> (used in ResNet-18 and ResNet-34): • Two 3 \times 3 convolutions • Simpler architecture • Fewer total layers but more FLOPs per block • Suitable for smaller models where computational budget allows <strong>Bottleneck block</strong> (used in ResNet-50, 101, and 152): • Three convolutions ( 1 \times 1 , 3 \times 3 , 1 \times 1 ) • More layers but fewer FLOPs per block • Suitable for deeper models where computational efficiency is critical <strong>The crossover point:</strong> ResNet-34 (basic blocks): 21.8M parameters, 3.6 billion FLOPs ResNet-50 (bottleneck blocks): 25.6M parameters, 3.8 billion FLOPs Despite having 50 layers vs. 34, ResNet-50 has only slightly more parameters and FLOPs. This is because the bottleneck design is so much more efficient that 50 bottleneck layers cost about the same as 34 basic layers. ResNet-50 also performs significantly better (76.0% vs. 73.3% top-1 accuracy on ImageNet), showing that the extra depth enabled by bottleneck efficiency translates directly into better performance.</a></li>
+    <li><a href="#channel-counts-in-practice">Channel Counts in Practice</a></li>
+    <li><a href="#note-that-the-inputoutput-channels-of-bottleneck-blocks-are-4x-the-bottleneck-channels-this-is-why-resnet-50-has-2048-channels-in-its-final-stage-compared-to-512-for-resnet-34-which-uses-basic-blocks">The standard ResNet bottleneck uses a 4:1 compression ratio: <strong>Stage 1</strong> ($ 56 \times 56 $): • Input/output channels: 256 • Bottleneck channels: 64 • Compression: $ 256 \rightarrow 64 \rightarrow 64 \rightarrow 256 $ <strong>Stage 2</strong> ($ 28 \times 28 $): • Input/output channels: 512 • Bottleneck channels: 128 • Compression: $ 512 \rightarrow 128 \rightarrow 128 \rightarrow 512 $ <strong>Stage 3</strong> ($ 14 \times 14 $): • Input/output channels: 1024 • Bottleneck channels: 256 • Compression: $ 1024 \rightarrow 256 \rightarrow 256 \rightarrow 1024 $ <strong>Stage 4</strong> ($ 7 \times 7 $): • Input/output channels: 2048 • Bottleneck channels: 512 • Compression: $ 2048 \rightarrow 512 \rightarrow 512 \rightarrow 2048 $ Note that the input/output channels of bottleneck blocks are 4x the bottleneck channels. This is why ResNet-50 has 2048 channels in its final stage, compared to 512 for ResNet-34 (which uses basic blocks).</a></li>
+    <li><a href="#the-expansion-factor">The Expansion Factor</a></li>
+    <li><a href="#-regnet-systematically-studies-the-design-space-and-finds-that-expansion-factors-around-2-4-are-optimal">The ratio $ C_{out} / C_{bn} $ is called the <strong>expansion factor</strong>. In the standard ResNet bottleneck, this factor is 4: <strong>Why 4?</strong> This is an empirical choice that provides a good trade-off: • Too small (e.g., expansion = 1): no compression advantage, essentially a basic block with an extra layer • Too large (e.g., expansion = 16): aggressive compression might lose too much information in the bottleneck • Expansion = 4: the $ 1 \times 1 $ layers are cheap, the $ 3 \times 3 $ layer is affordable, and the compression does not significantly hurt representational power Later architectures have experimented with different expansion factors: • ResNeXt: uses grouped convolutions to increase effective width while keeping FLOPs constant • EfficientNet: uses variable expansion factors (between 1 and 6) optimized by neural architecture search • RegNet: systematically studies the design space and finds that expansion factors around 2-4 are optimal</a></li>
+    <li><a href="#information-flow-through-the-bottleneck">Information Flow Through the Bottleneck</a></li>
+    <li><a href="#even-if-the-bottlenecks-compression-is-too-aggressive-and-discards-useful-information-the-skip-connection-preserves-the-full-256-dimensional-input-the-output--y--fx--x--has-access-to-both-the-original-information--x--and-the-bottlenecks-processed-contribution--fx-">What happens to the information as it passes through the three layers? <strong>$ 1 \times 1 $ compress (information bottleneck):</strong> The 256-dimensional feature vector is projected to 64 dimensions. This is a lossy compression: the network must learn which 64 linear combinations of the 256 features are most informative. The projection learns to preserve the features most relevant to the task. <strong>$ 3 \times 3 $ process (spatial reasoning):</strong> In the compressed space, the 3 \times 3 convolution looks at neighboring spatial positions. It can detect edges, textures, and patterns in the compressed feature space. Because the channel count is small (64), this operation is cheap. <strong>$ 1 \times 1 $ expand (information recovery):</strong> The 64-dimensional processed features are projected back to 256 dimensions. This expansion allows the network to “spread” the processed information across the full channel space, creating a rich output representation. <strong>The skip connection ensures nothing is lost:</strong> Even if the bottleneck’s compression is too aggressive and discards useful information, the skip connection preserves the full 256-dimensional input. The output $ y = F(x) + x $ has access to both the original information ($ x $) and the bottleneck’s processed contribution ($ F(x) $).</a></li>
+    <li><a href="#parameter-count-analysis">Parameter Count Analysis</a></li>
+    <li><a href="#the-bottleneck-has-17x-fewer-parameters-than-the-basic-block-this-is-the-same-ratio-as-the-computational-savings-because-both-flops-and-parameters-scale-with-the-same-product-of-channel-dimensions-and-kernel-size">For a bottleneck block with input/output channels $ C $ and bottleneck channels $ C/4 $: <strong>$ 1 \times 1 $ compress:</strong> <strong>$ 3 \times 3 $ process:</strong> <strong>$ 1 \times 1 $ expand:</strong> <strong>Total:</strong> <strong>Basic block (two $ 3 \times 3 $):</strong> <strong>Ratio:</strong> The bottleneck has 17x fewer parameters than the basic block. This is the same ratio as the computational savings, because both FLOPs and parameters scale with the same product of channel dimensions and kernel size.</a></li>
+    <li><a href="#bottleneck-blocks-in-resnet-variants">Bottleneck Blocks in ResNet Variants</a></li>
+    <li><a href="#the-depth-primarily-increases-in-stage-3-the--14-times-14--resolution-stage-this-is-because-stage-3-has-a-good-balance-of-spatial-resolution-enough-to-capture-meaningful-spatial-patterns-and-manageable-computation-not-too-large-spatially-not-too-many-channels">The number of bottleneck blocks varies across ResNet configurations:
+ResNet-50: 3 + 4 + 6 + 3 = 16 bottleneck blocks
+ResNet-101: 3 + 4 + 23 + 3 = 33 bottleneck blocks
+ResNet-152: 3 + 8 + 36 + 3 = 50 bottleneck blocks
+The depth primarily increases in Stage 3 (the  14 \times 14  resolution stage). This is because Stage 3 has a good balance of spatial resolution (enough to capture meaningful spatial patterns) and manageable computation (not too large spatially, not too many channels).</a></li>
+    <li><a href="#beyond-the-standard-bottleneck">Beyond the Standard Bottleneck</a></li>
+    <li><a href="#these-extensions-all-build-on-the-bottlenecks-core-idea-of-compress-process-expand-showing-how-fundamental-and-versatile-this-design-pattern-is">Several important architectures have modified the bottleneck design: <strong>ResNeXt (2017):</strong> Replaces the single $ 3 \times 3 $ convolution with $ G $ parallel grouped convolutions: This increases the “cardinality” (number of parallel paths) while keeping FLOPs constant. ResNeXt-50 outperforms ResNet-50 at the same computational budget. <strong>SE-ResNet (Squeeze-and-Excitation, 2018):</strong> Adds a channel attention mechanism after the bottleneck: The SE module learns to re-weight channels based on their importance, adding very few parameters. <strong>EfficientNet (2019):</strong> Uses neural architecture search to find optimal bottleneck configurations (expansion ratio, kernel size, channel count) for each block in the network. These extensions all build on the bottleneck’s core idea of compress-process-expand, showing how fundamental and versatile this design pattern is.</a></li>
+    <li><a href="#gradient-flow-through-the-bottleneck">Gradient Flow Through the Bottleneck</a></li>
+    <li><a href="#this-is-precisely-why-the-bottleneck-design-works-the-skip-connections-gradient-is-always-1-regardless-of-how-many-layers-are-stacked-in-the-residual-branch-the-computational-savings-of-the-bottleneck-come-without-any-cost-to-gradient-flow">The gradient flow through a bottleneck block follows the same residual principle as basic blocks, but with an additional layer in the residual branch: <strong>Forward:</strong> <strong>Backward (through skip connection):</strong> The identity term $ I $ provides the gradient highway, just as in basic blocks. The gradient through the residual branch now passes through three layers instead of two, but the skip connection ensures that even if this three-layer gradient is small, the overall gradient remains healthy. <strong>The three-layer gradient path:</strong> Each factor involves a convolution Jacobian and a ReLU mask. With three multiplicative factors instead of two (as in basic blocks), the residual gradient through the bottleneck branch may be smaller. However, the skip connection compensates: the identity gradient is independent of the number of layers in the branch. This is precisely why the bottleneck design works: the skip connection’s gradient is always 1, regardless of how many layers are stacked in the residual branch. The computational savings of the bottleneck come without any cost to gradient flow.</a></li>
+    <li><a href="#the-role-of-batch-normalization-in-bottleneck-blocks">The Role of Batch Normalization in Bottleneck Blocks</a></li>
+    <li><a href="#the-relu-after-the-addition---y--textreluh_3--x---is-applied-to-the-combined-output-this-means-no-batchnorm-appears-between-the-addition-and-the-final-activation-keeping-the-skip-connection-as-clean-as-possible-only-one-non-linearity-on-the-shortcut-path">Batch normalization appears three times in each bottleneck block, once after each convolution: <strong>Each BatchNorm serves a specific purpose:</strong> • $ \text{BN}_1 $ (after $ 1 \times 1 $ compress): Normalizes the compressed representation before ReLU. Without this, the distribution shift from the channel reduction could cause most values to be negative (zeroed by ReLU), wasting capacity. • $ \text{BN}_2 $ (after $ 3 \times 3 $ process): Normalizes the spatially processed features. The $ 3 \times 3 $ convolution aggregates neighboring positions, which can create features with larger variance. BatchNorm resets the scale. • $ \text{BN}_3 $ (after $ 1 \times 1 $ expand): Normalizes the expanded representation before it is added to the skip connection. This is crucial: if $ h_3 $ has a very different scale from $ x $, the addition $ h_3 + x $ would be dominated by whichever term is larger. BatchNorm ensures both terms contribute meaningfully. <strong>Note on the final ReLU:</strong> The ReLU after the addition ( $ y = \text{ReLU}(h_3 + x) $ ) is applied to the combined output. This means no BatchNorm appears between the addition and the final activation, keeping the skip connection as clean as possible (only one non-linearity on the shortcut path).</a></li>
+    <li><a href="#why-deeper-networks-need-bottleneck-blocks">Why Deeper Networks Need Bottleneck Blocks</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/resnet-bottleneck-architecture/">
+                <img src="/p/resnet-bottleneck-architecture/130852450_p0_hu_295bda98d71b0915.jpg"
+                        srcset="/p/resnet-bottleneck-architecture/130852450_p0_hu_295bda98d71b0915.jpg 800w, /p/resnet-bottleneck-architecture/130852450_p0_hu_ffca5f65b598ffd2.jpg 1600w"
+                        width="800" 
+                        height="1106" 
+                        loading="lazy"
+                        alt="Featured image of post ResNet Bottleneck Architecture" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" style="background-color: #3b82f6; color: #fff;">
+                深度学习
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/resnet-bottleneck-architecture/">ResNet Bottleneck Architecture</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            The Bottleneck Architecture of ResNet (From Tensortonic)
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Mar 26, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="the-computational-challenge-of-going-deep">The Computational Challenge of Going Deep
+</h2><h2 id="the-bottleneck-block-solves-this-by-introducing-a-compress-process-expand-pattern-that-reduces-computation-by-a-factor-of-roughly-8-while-maintaining-or-even-increasing-representational-power">As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:
+$$
+ \text{FLOPs}_{\text{basic}} = 2 \times (256 \times 256 \times 3 \times 3) \times H \times W = 1{,}179{,}648 \times H \times W 
+$$
+For ResNet-50 with 16 blocks at 256 channels on a $ 14 \times 14 $ feature map, this is roughly 3.7 billion FLOPs just for one stage. Scaling to deeper networks (101, 152 layers) with basic blocks would be computationally prohibitive.
+The bottleneck block solves this by introducing a &ldquo;compress, process, expand&rdquo; pattern that reduces computation by a factor of roughly 8 while maintaining or even increasing representational power.
+</h2><h2 id="the-bottleneck-architecture">The Bottleneck Architecture
+</h2><h2 id="">The bottleneck block uses three convolutions instead of two, with a channel compression in the middle:
+$$
+ y = F_{\text{bottleneck}}(x) + x 
+$$
+where $ F_{\text{bottleneck}} $ consists of:
+Layer 1: $ 1 \times 1 $ convolution (compress)
+$$
+ h_1 = \text{ReLU}(\text{BN}(W_1 \cdot x)) 
+$$
+Reduces channels from $ C $ to $ C/4 $. For example, 256 channels to 64.
+Layer 2: $ 3 \times 3 $ convolution (process)
+$$
+ h_2 = \text{ReLU}(\text{BN}(W_2 * h_1)) 
+$$
+Performs spatial processing at the reduced channel count. The $ 3 \times 3 $ kernel captures spatial patterns, but at $ C/4 $ channels instead of $ C $.
+Layer 3: $ 1 \times 1 $ convolution (expand)
+$$
+ h_3 = \text{BN}(W_3 \cdot h_2) 
+$$
+Expands channels back from $ C/4 $ to $ C $. Note: no ReLU after this layer (the ReLU comes after the addition with the skip connection).
+Skip connection and activation:
+$$
+ y = \text{ReLU}(h_3 + x) 
+$$
+</h2><h2 id="why-the-bottleneck-saves-computation">Why the Bottleneck Saves Computation
+</h2><h2 id="the-bottleneck-block-is-roughly-17-times-cheaper-than-the-basic-block-at-the-same-channel-count-this-massive-savings-is-what-enables-resnet-50-101-and-152-to-be-practical">The key insight is that the expensive $ 3 \times 3 $ convolution operates on a compressed representation with $ C/4 $ channels instead of $ C $ channels.
+Basic block FLOPs (two $ 3 \times 3 $ convolutions at $ C $ channels):
+$$ \text{FLOPs}_{\text{basic}} = 2 \times C^2 \times 9 \times H \times W = 18C^2 HW $$
+Bottleneck block FLOPs:
+• $ 1 \times 1 $ compress ($ C \rightarrow C/4 $): $ C \times C/4 \times 1 \times HW = C^2 HW/4 $
+• $ 3 \times 3 $ process ($ C/4 \rightarrow C/4 $): $ (C/4)^2 \times 9 \times HW = 9C^2 HW/16 $
+• $ 1 \times 1 $ expand ($ C/4 \rightarrow C $): $ C/4 \times C \times 1 \times HW = C^2 HW/4 $
+$$ \text{FLOPs}_{\text{bottleneck}} = C^2 HW \left(\frac{1}{4} + \frac{9}{16} + \frac{1}{4}\right) = C^2 HW \times \frac{17}{16} \approx 1.06 C^2 HW $$
+Ratio:
+$$
+ \frac{\text{FLOPs}_{\text{basic}}}{\text{FLOPs}_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17
+$$
+The bottleneck block is roughly 17 times cheaper than the basic block at the same channel count. This massive savings is what enables ResNet-50, 101, and 152 to be practical.
+</h2><h2 id="worked-example-computational-savings">Worked Example: Computational Savings
+</h2><h2 id="savings--231m--136m-approx-17times-">Consider a bottleneck block at stage 3 with $ C = 256 $ channels and $ H \times W = 14 \times 14 $:
+$ 1 \times 1 $ compress ($ 256 \rightarrow 64 $):
+$$ 256 \times 64 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$
+$ 3 \times 3 $ process ($ 64 \rightarrow 64 $):
+$$ 64 \times 64 \times 9 \times 196 = 7{,}225{,}344 \text{ FLOPs} $$
+$ 1 \times 1 $ expand ($ 64 \rightarrow 256 $):
+$$ 64 \times 256 \times 1 \times 196 = 3{,}211{,}264 \text{ FLOPs} $$
+Total bottleneck: $ 13{,}647{,}872 $ FLOPs
+Equivalent basic block (two $ 3 \times 3 $ at 256 channels):
+$$ 2 \times 256 \times 256 \times 9 \times 196 = 231{,}211{,}008 \text{ FLOPs} $$
+Savings: $ 231M / 13.6M \approx 17\times $
+</h2><h2 id="lin-et-al-2013-introduced--1-times-1--convolutions-in-the-network-in-network-paper-and-googlenetinception-popularized-them-for-dimension-reduction-resnets-bottleneck-design-makes-them-central-to-the-architecture">The $ 1 \times 1 $ Convolution
+The $ 1 \times 1 $ convolution (pointwise convolution) is the key enabler of the bottleneck design. Understanding it is essential.
+What a $ 1 \times 1 $ convolution does:
+At each spatial position $ (h, w) $, the $ 1 \times 1 $ convolution applies a linear transformation to the channel vector:
+$$ y_{hw} = W \cdot x_{hw} + b $$
+where $ x_{hw} \in \mathbb{R}^{C_{in}} $ is the input feature vector at position $ (h, w) $, $ W \in \mathbb{R}^{C_{out} \times C_{in}} $ is the weight matrix, and $ y_{hw} \in \mathbb{R}^{C_{out}} $ is the output.
+<strong>What it does NOT do:</strong>
+• It does not look at neighboring spatial positions (no spatial receptive field)
+• It does not capture spatial patterns (that is the  3 \times 3  convolution&rsquo;s job)
+<strong>What it is good at:</strong>
+• Changing the number of channels (cheaply)
+• Learning linear combinations of feature channels
+• Channel mixing: each output channel is a weighted sum of all input channels
+• Dimensionality reduction: compressing a high-dimensional channel vector into a lower-dimensional one
+Lin et al. (2013) introduced $ 1 \times 1 $ convolutions in the Network-in-Network paper, and GoogLeNet/Inception popularized them for dimension reduction. ResNet&rsquo;s bottleneck design makes them central to the architecture.
+</h2><h2 id="the-compression-expansion-pattern">The Compression-Expansion Pattern
+</h2><h2 id="the-common-principle-move-to-a-different-dimensionality-for-processing-then-return-to-the-original-dimensionality-the-working-dimension-can-be-larger-or-smaller-depending-on-the-design-goals-computational-savings-vs-representational-richness">The bottleneck&rsquo;s &ldquo;compress, process, expand&rdquo; pattern appears throughout deep learning:
+<strong>In ResNet bottleneck blocks:</strong>
+$$ C\xrightarrow{1 \times 1} C/4 \xrightarrow{3 \times 3} C/4 \xrightarrow{1 \times 1} C $$
+Compress channels by 4x, do spatial processing cheaply, expand back.
+<strong>In MobileNet inverted bottlenecks:</strong>
+$$ C \xrightarrow{1 \times 1} 6C \xrightarrow{3 \times 3\, \text{depthwise}} 6C \xrightarrow{1 \times 1} C $$
+The opposite direction: expand first, process, then compress. Called &ldquo;inverted&rdquo; because the wide part is in the middle.
+<strong>In Transformer FFN:</strong>
+$$ 
+d_{model} \xrightarrow{W_1} 4 \times d_{model} \xrightarrow{\text{ReLU}} 4 \times d_{model} \xrightarrow{W_2} d_{model}
+$$
+Expand by 4x, apply non-linearity, compress back.
+The common principle: move to a different dimensionality for processing, then return to the original dimensionality. The &ldquo;working dimension&rdquo; can be larger or smaller depending on the design goals (computational savings vs. representational richness).
+</h2><h2 id="bottleneck-vs-basic-when-to-use-which">Bottleneck vs. Basic: When to Use Which
+</h2><h2 id="resnet-50-also-performs-significantly-better-760-vs-733-top-1-accuracy-on-imagenet-showing-that-the-extra-depth-enabled-by-bottleneck-efficiency-translates-directly-into-better-performance">The ResNet paper uses two different block types depending on model depth:
+<strong>Basic block</strong> (used in ResNet-18 and ResNet-34):
+• Two  3 \times 3  convolutions
+• Simpler architecture
+• Fewer total layers but more FLOPs per block
+• Suitable for smaller models where computational budget allows
+<strong>Bottleneck block</strong> (used in ResNet-50, 101, and 152):
+• Three convolutions ( 1 \times 1 ,  3 \times 3 ,  1 \times 1 )
+• More layers but fewer FLOPs per block
+• Suitable for deeper models where computational efficiency is critical
+<strong>The crossover point:</strong>
+ResNet-34 (basic blocks): 21.8M parameters, 3.6 billion FLOPs
+ResNet-50 (bottleneck blocks): 25.6M parameters, 3.8 billion FLOPs
+Despite having 50 layers vs. 34, ResNet-50 has only slightly more parameters and FLOPs. This is because the bottleneck design is so much more efficient that 50 bottleneck layers cost about the same as 34 basic layers.
+ResNet-50 also performs significantly better (76.0% vs. 73.3% top-1 accuracy on ImageNet), showing that the extra depth enabled by bottleneck efficiency translates directly into better performance.
+</h2><h2 id="channel-counts-in-practice">Channel Counts in Practice
+</h2><h2 id="note-that-the-inputoutput-channels-of-bottleneck-blocks-are-4x-the-bottleneck-channels-this-is-why-resnet-50-has-2048-channels-in-its-final-stage-compared-to-512-for-resnet-34-which-uses-basic-blocks">The standard ResNet bottleneck uses a 4:1 compression ratio:
+<strong>Stage 1</strong> ($ 56 \times 56 $):
+• Input/output channels: 256
+• Bottleneck channels: 64
+• Compression: $ 256 \rightarrow 64 \rightarrow 64 \rightarrow 256 $
+<strong>Stage 2</strong> ($ 28 \times 28 $):
+• Input/output channels: 512
+• Bottleneck channels: 128
+• Compression: $ 512 \rightarrow 128 \rightarrow 128 \rightarrow 512 $
+<strong>Stage 3</strong> ($ 14 \times 14 $):
+• Input/output channels: 1024
+• Bottleneck channels: 256
+• Compression: $ 1024 \rightarrow 256 \rightarrow 256 \rightarrow 1024 $
+<strong>Stage 4</strong> ($ 7 \times 7 $):
+• Input/output channels: 2048
+• Bottleneck channels: 512
+• Compression: $ 2048 \rightarrow 512 \rightarrow 512 \rightarrow 2048 $
+Note that the input/output channels of bottleneck blocks are 4x the bottleneck channels. This is why ResNet-50 has 2048 channels in its final stage, compared to 512 for ResNet-34 (which uses basic blocks).
+</h2><h2 id="the-expansion-factor">The Expansion Factor
+</h2><h2 id="-regnet-systematically-studies-the-design-space-and-finds-that-expansion-factors-around-2-4-are-optimal">The ratio $ C_{out} / C_{bn} $ is called the <strong>expansion factor</strong>. In the standard ResNet bottleneck, this factor is 4:
+$$ C_{out} = 4 \times C_{bn} $$
+<strong>Why 4?</strong>
+This is an empirical choice that provides a good trade-off:
+• Too small (e.g., expansion = 1): no compression advantage, essentially a basic block with an extra layer
+• Too large (e.g., expansion = 16): aggressive compression might lose too much information in the bottleneck
+• Expansion = 4: the $ 1 \times 1 $ layers are cheap, the $ 3 \times 3 $ layer is affordable, and the compression does not significantly hurt representational power
+Later architectures have experimented with different expansion factors:
+• ResNeXt: uses grouped convolutions to increase effective width while keeping FLOPs constant
+• EfficientNet: uses variable expansion factors (between 1 and 6) optimized by neural architecture search
+• RegNet: systematically studies the design space and finds that expansion factors around 2-4 are optimal
+</h2><h2 id="information-flow-through-the-bottleneck">Information Flow Through the Bottleneck
+</h2><h2 id="even-if-the-bottlenecks-compression-is-too-aggressive-and-discards-useful-information-the-skip-connection-preserves-the-full-256-dimensional-input-the-output--y--fx--x--has-access-to-both-the-original-information--x--and-the-bottlenecks-processed-contribution--fx-">What happens to the information as it passes through the three layers?
+<strong>$ 1 \times 1 $ compress (information bottleneck):</strong>
+The 256-dimensional feature vector is projected to 64 dimensions. This is a lossy compression: the network must learn which 64 linear combinations of the 256 features are most informative. The projection learns to preserve the features most relevant to the task.
+<strong>$ 3 \times 3 $ process (spatial reasoning):</strong>
+In the compressed space, the  3 \times 3  convolution looks at neighboring spatial positions. It can detect edges, textures, and patterns in the compressed feature space. Because the channel count is small (64), this operation is cheap.
+<strong>$ 1 \times 1 $ expand (information recovery):</strong>
+The 64-dimensional processed features are projected back to 256 dimensions. This expansion allows the network to &ldquo;spread&rdquo; the processed information across the full channel space, creating a rich output representation.
+<strong>The skip connection ensures nothing is lost:</strong>
+Even if the bottleneck&rsquo;s compression is too aggressive and discards useful information, the skip connection preserves the full 256-dimensional input. The output $ y = F(x) + x $ has access to both the original information ($ x $) and the bottleneck&rsquo;s processed contribution ($ F(x) $).
+</h2><h2 id="parameter-count-analysis">Parameter Count Analysis
+</h2><h2 id="the-bottleneck-has-17x-fewer-parameters-than-the-basic-block-this-is-the-same-ratio-as-the-computational-savings-because-both-flops-and-parameters-scale-with-the-same-product-of-channel-dimensions-and-kernel-size">For a bottleneck block with input/output channels $ C $ and bottleneck channels $ C/4 $:
+<strong>$ 1 \times 1 $ compress:</strong>
+$$ P_1 = C \times C/4 = C^2/4 $$
+<strong>$ 3 \times 3 $ process:</strong>
+$$ P_2 = C/4 \times C/4 \times 9 = 9C^2/16 $$
+<strong>$ 1 \times 1 $ expand:</strong>
+$$ P_3 = C/4 \times C = C^2/4 $$
+<strong>Total:</strong>
+$$ P_{\text{bottleneck}} = C^2/4 + 9C^2/16 + C^2/4 = 17C^2/16 \approx 1.06C^2 $$
+<strong>Basic block (two $ 3 \times 3 $):</strong>
+$$ P_{\text{basic}} = 2 \times C^2 \times 9 = 18C^2 $$
+<strong>Ratio:</strong>
+$$ \frac{P_{\text{basic}}}{P_{\text{bottleneck}}} = \frac{18}{1.06} \approx 17 $$
+The bottleneck has 17x fewer parameters than the basic block. This is the same ratio as the computational savings, because both FLOPs and parameters scale with the same product of channel dimensions and kernel size.
+</h2><h2 id="bottleneck-blocks-in-resnet-variants">Bottleneck Blocks in ResNet Variants
+</h2><h2 id="the-depth-primarily-increases-in-stage-3-the--14-times-14--resolution-stage-this-is-because-stage-3-has-a-good-balance-of-spatial-resolution-enough-to-capture-meaningful-spatial-patterns-and-manageable-computation-not-too-large-spatially-not-too-many-channels">The number of bottleneck blocks varies across ResNet configurations:
+ResNet-50: 3 + 4 + 6 + 3 = 16 bottleneck blocks
+ResNet-101: 3 + 4 + 23 + 3 = 33 bottleneck blocks
+ResNet-152: 3 + 8 + 36 + 3 = 50 bottleneck blocks
+The depth primarily increases in Stage 3 (the  14 \times 14  resolution stage). This is because Stage 3 has a good balance of spatial resolution (enough to capture meaningful spatial patterns) and manageable computation (not too large spatially, not too many channels).
+</h2><h2 id="beyond-the-standard-bottleneck">Beyond the Standard Bottleneck
+</h2><h2 id="these-extensions-all-build-on-the-bottlenecks-core-idea-of-compress-process-expand-showing-how-fundamental-and-versatile-this-design-pattern-is">Several important architectures have modified the bottleneck design:
+<strong>ResNeXt (2017):</strong>
+Replaces the single $ 3 \times 3 $ convolution with $ G $ parallel grouped convolutions:
+$$ F(x) = \sum_{i=1}^{G} W_3^{(i)} \cdot \text{ReLU}(\text{BN}(W_2^{(i)} * \text{ReLU}(\text{BN}(W_1^{(i)} \cdot x)))) $$
+This increases the &ldquo;cardinality&rdquo; (number of parallel paths) while keeping FLOPs constant. ResNeXt-50 outperforms ResNet-50 at the same computational budget.
+<strong>SE-ResNet (Squeeze-and-Excitation, 2018):</strong>
+Adds a channel attention mechanism after the bottleneck:
+$$ y = F(x) \cdot \text{SE}(F(x)) + x $$
+The SE module learns to re-weight channels based on their importance, adding very few parameters.
+<strong>EfficientNet (2019):</strong>
+Uses neural architecture search to find optimal bottleneck configurations (expansion ratio, kernel size, channel count) for each block in the network.
+These extensions all build on the bottleneck&rsquo;s core idea of compress-process-expand, showing how fundamental and versatile this design pattern is.
+</h2><h2 id="gradient-flow-through-the-bottleneck">Gradient Flow Through the Bottleneck
+</h2><h2 id="this-is-precisely-why-the-bottleneck-design-works-the-skip-connections-gradient-is-always-1-regardless-of-how-many-layers-are-stacked-in-the-residual-branch-the-computational-savings-of-the-bottleneck-come-without-any-cost-to-gradient-flow">The gradient flow through a bottleneck block follows the same residual principle as basic blocks, but with an additional layer in the residual branch:
+<strong>Forward:</strong>
+$$ 
+y = h_3 + x = (\text{BN}(W_3 \cdot \text{ReLU}(\text{BN}(W_2 * \text{ReLU}(\text{BN}(W_1 \cdot x)))))) + x 
+$$
+<strong>Backward (through skip connection):</strong>
+$$ 
+\frac{\partial \mathcal{L}}{\partial x} = \frac{\partial \mathcal{L}}{\partial y} \cdot \left(\frac{\partial h_3}{\partial x} + I\right) 
+$$
+The identity term $ I $ provides the gradient highway, just as in basic blocks. The gradient through the residual branch now passes through three layers instead of two, but the skip connection ensures that even if this three-layer gradient is small, the overall gradient remains healthy.
+<strong>The three-layer gradient path:</strong>
+$$
+ \frac{\partial h_3}{\partial x} = \frac{\partial h_3}{\partial h_2} \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial x} 
+$$
+Each factor involves a convolution Jacobian and a ReLU mask. With three multiplicative factors instead of two (as in basic blocks), the residual gradient through the bottleneck branch may be smaller. However, the skip connection compensates: the identity gradient is independent of the number of layers in the branch.
+This is precisely why the bottleneck design works: the skip connection&rsquo;s gradient is always 1, regardless of how many layers are stacked in the residual branch. The computational savings of the bottleneck come without any cost to gradient flow.
+</h2><h2 id="the-role-of-batch-normalization-in-bottleneck-blocks">The Role of Batch Normalization in Bottleneck Blocks
+</h2><h2 id="the-relu-after-the-addition---y--textreluh_3--x---is-applied-to-the-combined-output-this-means-no-batchnorm-appears-between-the-addition-and-the-final-activation-keeping-the-skip-connection-as-clean-as-possible-only-one-non-linearity-on-the-shortcut-path">Batch normalization appears three times in each bottleneck block, once after each convolution:
+$$ h_1 = \text{ReLU}(\text{BN}_1(W_1 \cdot x)) $$
+$$ h_2 = \text{ReLU}(\text{BN}_2(W_2 * h_1)) $$
+$$ h_3 = \text{BN}_3(W_3 \cdot h_2) $$
+<strong>Each BatchNorm serves a specific purpose:</strong>
+• $ \text{BN}_1 $ (after $ 1 \times 1 $ compress): Normalizes the compressed representation before ReLU. Without this, the distribution shift from the channel reduction could cause most values to be negative (zeroed by ReLU), wasting capacity.
+• $ \text{BN}_2 $ (after $ 3 \times 3 $ process): Normalizes the spatially processed features. The $ 3 \times 3 $ convolution aggregates neighboring positions, which can create features with larger variance. BatchNorm resets the scale.
+• $ \text{BN}_3 $ (after $ 1 \times 1 $ expand): Normalizes the expanded representation before it is added to the skip connection. This is crucial: if $ h_3 $ has a very different scale from $ x $, the addition $ h_3 + x $ would be dominated by whichever term is larger. BatchNorm ensures both terms contribute meaningfully.
+<strong>Note on the final ReLU:</strong>
+The ReLU after the addition ( $ y = \text{ReLU}(h_3 + x) $ ) is applied to the combined output. This means no BatchNorm appears between the addition and the final activation, keeping the skip connection as clean as possible (only one non-linearity on the shortcut path).
+</h2><h2 id="why-deeper-networks-need-bottleneck-blocks">Why Deeper Networks Need Bottleneck Blocks
+</h2><p>The relationship between network depth and block type is not arbitrary:
+<strong>Shallow networks (18-34 layers) use basic blocks because:</strong>
+• Few enough blocks that the higher per-block cost is affordable
+• Simpler gradient flow through only two layers per block
+• Sufficient capacity without channel expansion ( 4 \times )
+<strong>Deep networks (50+ layers) use bottleneck blocks because:</strong>
+• Many blocks require low per-block cost for tractability
+• The  17 \times  computational savings per block accumulate dramatically over 50+ layers
+• The  4 \times  channel expansion provides more capacity per parameter
+• The three-layer structure is not a disadvantage when skip connections handle gradient flow
+<strong>The depth-efficiency trade-off:</strong>
+A ResNet-152 with basic blocks would require:
+</p>
+$$
+ \text{FLOPs} \approx 17 \times 11.3\text{B} = 192\text{B FLOPs} 
+$$<p>
+This would be impractical. The bottleneck design makes 152-layer networks feasible at only 11.3B FLOPs, comparable to a 34-layer basic network (3.6B FLOPs) in terms of wall-clock training time per image.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script src="https://utteranc.es/client.js" 
+        repo=""
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    let utterancesLoaded = false;
+
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+
+        
+        utterancesLoaded = true;
+        setUtterancesTheme(document.documentElement.dataset.scheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (!utterancesLoaded) return;
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy;
+        
+        2025 -
+        
+        2026 Brown1729
+    </section>
+
+    <section class="powerby">
+        
+        <p>欢迎访问我的 <b><a href="https://brown1729.github.io/" target="_blank" rel="noopener">个人博客</a></b>
+        </p>
+        
+    </section>
+</footer>
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.df35fcf152abfc5ef2a69421ab5ee7c134ed69ad96b84ee09f95120316921453.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
