@@ -2,120 +2,129 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://brown1729.github.io/</loc>
-    <lastmod>2026-03-26T19:37:00+08:00</lastmod>
+    <loc>http://localhost:2127/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/"
+                href="http://localhost:2127/en/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/"
+                href="http://localhost:2127/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/categories/</loc>
-    <lastmod>2026-03-26T19:37:00+08:00</lastmod>
+    <loc>http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2127/categories/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/categories/"
+                href="http://localhost:2127/en/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/categories/"
+                href="http://localhost:2127/categories/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/post/</loc>
-    <lastmod>2026-03-26T19:37:00+08:00</lastmod>
+    <loc>http://localhost:2127/post/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/post/"
+                href="http://localhost:2127/en/post/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/post/"
+                href="http://localhost:2127/post/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/</loc>
+    <loc>http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2127/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</loc>
+    <lastmod>2026-04-12T19:23:00+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2127/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/</loc>
     <lastmod>2026-03-26T19:37:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/p/resnet-bottleneck-architecture/"
+                href="http://localhost:2127/en/p/resnet-bottleneck-architecture/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/"
+                href="http://localhost:2127/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://localhost:2127/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2026-03-26T19:37:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"
+                href="http://localhost:2127/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"
+                href="http://localhost:2127/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/categories/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/</loc>
+    <loc>http://localhost:2127/categories/%E9%AB%98%E4%B8%AD%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2025-09-10T10:02:37+08:00</lastmod>
   </url><url>
-    <loc>https://brown1729.github.io/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</loc>
+    <loc>http://localhost:2127/p/%E4%B8%89%E8%A7%92%E5%BD%A2%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E8%AF%81%E6%98%8E/</loc>
     <lastmod>2025-09-10T10:02:37+08:00</lastmod>
   </url><url>
-    <loc>https://brown1729.github.io/page/</loc>
+    <loc>http://localhost:2127/page/</loc>
     <lastmod>2020-10-09T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/page/"
+                href="http://localhost:2127/en/page/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/page/"
+                href="http://localhost:2127/page/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/%E5%85%B3%E4%BA%8E/</loc>
+    <loc>http://localhost:2127/%E5%85%B3%E4%BA%8E/</loc>
     <lastmod>2020-10-09T00:00:00+00:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/about/"
+                href="http://localhost:2127/en/about/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/%E5%85%B3%E4%BA%8E/"
+                href="http://localhost:2127/%E5%85%B3%E4%BA%8E/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/archives/</loc>
+    <loc>http://localhost:2127/archives/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://brown1729.github.io/tags/</loc>
+    <loc>http://localhost:2127/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://brown1729.github.io/en/tags/"
+                href="http://localhost:2127/en/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://brown1729.github.io/tags/"
+                href="http://localhost:2127/tags/"
                 />
   </url><url>
-    <loc>https://brown1729.github.io/search/</loc>
+    <loc>http://localhost:2127/search/</loc>
   </url><url>
-    <loc>https://brown1729.github.io/%E9%93%BE%E6%8E%A5/</loc>
+    <loc>http://localhost:2127/%E9%93%BE%E6%8E%A5/</loc>
   </url>
 </urlset>

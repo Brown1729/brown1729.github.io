@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Canny边缘检测是一种常用的数字处理技术，用于检测图像中的边缘。">
+<title>Canny边缘检测</title>
+
+<link rel='canonical' href='http://localhost:1313/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Canny边缘检测">
+<meta property='og:description' content="Canny边缘检测是一种常用的数字处理技术，用于检测图像中的边缘。">
+<meta property='og:url' content='http://localhost:1313/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/'>
+<meta property='og:site_name' content='Brown1729'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-12T19:23:00&#43;08:00'/><meta property='article:modified_time' content='2026-04-12T19:23:00&#43;08:00'/><meta property='og:image' content='http://localhost:1313/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467.jpg' />
+<meta name="twitter:title" content="Canny边缘检测">
+<meta name="twitter:description" content="Canny边缘检测是一种常用的数字处理技术，用于检测图像中的边缘。"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a91902b755228bb.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😴</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Brown1729</a></h1>
+            <h2 class="site-description">岁月为百代之过客。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/273395527'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Brown1729'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/BrownZ1729'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://www.zhihu.com/people/fan-hua-84-11'
+                        target="_blank"
+                        title="Zhihu"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-zhihu"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6h6v12h-2l-2 2l-1 -2h-1z" /><path d="M4 12h6.5" /><path d="M10.5 6h-5" /><path d="M6 4c-.5 2.5 -1.5 3.5 -2.5 4.5" /><path d="M8 6v7c0 4.5 -2 5.5 -4 7" /><path d="M11 18l-3 -5" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>查找</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#选题背景">选题背景</a></li>
+    <li><a href="#算法描述重点">算法描述（重点）</a>
+      <ol>
+        <li><a href="#数学模型">数学模型</a>
+          <ol>
+            <li><a href="#问题定义">问题定义</a></li>
+            <li><a href="#变分法求解泛函极值">变分法求解泛函极值</a></li>
+            <li><a href="#扩展至二维">扩展至二维</a></li>
+          </ol>
+        </li>
+        <li><a href="#算法流程">算法流程</a>
+          <ol>
+            <li><a href="#高斯平滑滤波">高斯平滑滤波</a></li>
+            <li><a href="#计算梯度幅值和方向">计算梯度幅值和方向</a></li>
+            <li><a href="#非极大值抑制">非极大值抑制</a></li>
+            <li><a href="#双阈值检测">双阈值检测</a></li>
+            <li><a href="#滞后边界跟踪">滞后边界跟踪</a></li>
+          </ol>
+        </li>
+        <li><a href="#尺度讨论">尺度讨论</a></li>
+      </ol>
+    </li>
+    <li><a href="#软件实现">软件实现</a>
+      <ol>
+        <li><a href="#高斯平滑滤波-1">高斯平滑滤波</a></li>
+        <li><a href="#计算梯度幅值和方向-1">计算梯度幅值和方向</a></li>
+        <li><a href="#非极大值抑制-1">非极大值抑制</a></li>
+        <li><a href="#双阈值检测-1">双阈值检测</a></li>
+        <li><a href="#滞后边界跟踪-1">滞后边界跟踪</a></li>
+      </ol>
+    </li>
+    <li><a href="#数据分析和可视化">数据分析和可视化</a>
+      <ol>
+        <li><a href="#每步拆分">每步拆分</a></li>
+        <li><a href="#尺度讨论-1">尺度讨论</a></li>
+      </ol>
+    </li>
+    <li><a href="#结论">结论</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/">
+                <img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467_hu_948cd46d92739246.jpg"
+                        srcset="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467_hu_948cd46d92739246.jpg 800w, /p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467_hu_655490e54ceebe29.jpg 1600w"
+                        width="800" 
+                        height="1067" 
+                        loading="lazy"
+                        alt="Featured image of post Canny边缘检测" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" >
+                数字图像处理
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/">Canny边缘检测</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            Canny边缘检测是一种常用的数字处理技术，用于检测图像中的边缘。
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Apr 12, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 10 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="canny-边缘检测">Canny 边缘检测
+</h1><h2 id="选题背景">选题背景
+</h2><p>Canny 边缘检测算法[1][2]在计算机视觉领域享有&quot;不可动摇&quot;的历史地位，被广泛誉为边缘检测的&quot;黄金标准&quot;。</p>
+<p>它的核心意义可以总结为以下四个方面：</p>
+<ol>
+<li>
+<p>从&quot;经验启发&quot;走向&quot;严格数学最优化&quot;
+在 Canny 之前，大多数边缘检测算子（如 Sobel、Prewitt、Roberts）都是基于研究者的直觉和经验设计的（例如用简单的差分模板去寻找像素突变）。
+Canny 第一次将边缘检测定义为一个数学最优化问题。他提出了三大严格的量化指标（信噪比、定位精度、单一响应），并运用变分法求出了理论上的最优解。
+这种&quot;定义目标 -&gt; 数学建模 -&gt; 求解最优&quot;的科学范式，深刻影响了后续数十年的计算机视觉研究。</p>
+</li>
+<li>
+<p>发现了边缘检测的&quot;不确定性原理&quot;
+Canny 在推导中证明了一个极其深刻的物理规律：检测率（抗噪性）和定位精度是一对不可调和的矛盾。
+算子越宽（平滑越多），越能抵抗噪声，但边缘的位置就越模糊；
+算子越窄，定位越精准，但极易把噪声当成边缘。
+这一发现彻底打破了寻找&quot;完美单一算子&quot;的幻想，为后来的多尺度图像分析奠定了理论基础。</p>
+</li>
+<li>
+<p>滞后双阈值完美解决&quot;边缘断裂&quot;行业痛点
+早期的算法通常只使用一个固定阈值，只要图像中有一点点噪声波动，提取出来的边缘就像虚线一样断断续续。
+Canny 创造性地引入了&quot;滞后双阈值（Hysteresis Thresholding）&ldquo;配合连通性分析，极大地提升了提取出完整、干净、连续边缘的概率。</p>
+</li>
+<li>
+<p>强大的工程适应性与长久的生命力
+虽然 Canny 推导出了复杂的理论最优算子，但他非常务实地证明了高斯一阶导数是对该算子的极佳近似。这使得算法不仅效果好，
+而且计算效率极高。时至今日，距论文发表将近 40 年，Canny 算法依然是 OpenCV 等各大计算机视觉库中最常用、最底层的核心函数，
+也是任何新提出的边缘检测算法必须对比的&quot;基准线&rdquo;。</p>
+</li>
+</ol>
+<h2 id="算法描述重点">算法描述（重点）
+</h2><h3 id="数学模型">数学模型
+</h3><h4 id="问题定义">问题定义
+</h4><p>Canny 认为，一个优秀的边缘检测器必须满足以下三个量化的数学准则：</p>
+<ul>
+<li>
+<p>良好的检测（Good Detection）：最大化输出信噪比（SNR）。</p>
+<p>算子对边缘中心的响应为 $H_G$，对噪声的均方根响应为 $H_n$ 。其比值为：
+</p>
+$$
+  SNR = \frac{H_G}{H_n} = \frac{|\int_{-W}^{+W} G(-x)f(x)dx|}{n_0 \sqrt{\int_{-W}^{+W} f^2(x)dx}}
+  $$<p>
+其中，假设边缘模型为$G(x)$， 算子为$f(x)$，加性高斯白噪声的均方幅度为$n_0$，滤波器宽度为$W$。</p>
+</li>
+<li>
+<p>良好的定位（Good Localization）：检测到的边缘点应尽可能靠近真实边缘的中心。</p>
+<p>定位性能被定义为边缘位置偏差均方根的倒数，通过Taylor级数和随机过程分析可得，定位算式为：
+</p>
+$$
+  Localization = \frac{|\int_{-W}^{+W} G'(-x)f'(x)dx|}{n_0 \sqrt{\int_{-W}^{+W} f'^2(x)dx}}
+  $$</li>
+<li>
+<p>单一响应（Low Multiple Responses）：对于单条边缘，算子应该只产生一个响应峰值，避免因噪声干扰而在边缘附近产生多个假边缘。</p>
+<p>Canny 利用 Rice 噪声公式 来预测噪声引起的平均峰值间距 $x_{max}$
+</p>
+$$
+  x_{max}(f) = 2 \pi \left( \frac{\int f'^2(x) dx}{\int f''^2(x) dx} \right)^{1/2}
+  $$<p>
+为了保证单一边缘只被标记一次，他引入了一个约束条件：将噪声响应的平均间距设定为算子宽度的某个比例 $k$（即 $x_{max} = kW$）</p>
+</li>
+</ul>
+<p>假设输入为 $G(x) = Au(x)$，其中$u(x)$为阶跃函数，$A$为幅值。
+要满足这三个准则，定义泛函
+</p>
+$$
+\Sigma(f) =  \Sigma(f) = \frac{|\int_{-W}^{0} f(x)dx|}{\sqrt{\int_{-W}^{W} f^2(x)dx}} \quad
+\Lambda(f') = \frac{|f'(0)|}{\sqrt{\int_{-W}^{W} f'^2(x)dx}}
+$$<p>现在，问题变成了一个经典的变分学问题：寻找一个函数 $f(x)$，使得目标泛函 $\Sigma(f) \cdot \Lambda(f&rsquo;)$ 取得极大值，
+同时满足单一响应约束和边界条件。</p>
+<h4 id="变分法求解泛函极值">变分法求解泛函极值
+</h4><p>由于 $\Sigma$ 和 $\Lambda$ 中的积分形式复杂，Canny 使用了等周问题（Isoperimetric Problem）的技巧。
+因为尺度变换不改变目标函数的极值结构，他将分母中的积分设定为常数，从而将问题转化为最小化分母之一，同时受其他积分常数约束的形式。</p>
+<p>他构造了带有拉格朗日乘子（$\lambda_1, \lambda_2, \lambda_3$）的复合泛函
+</p>
+$$
+\Psi(f, f', f'') = f^2 + \lambda_1 f'^2 + \lambda_2 f''^2 + \lambda_3 f
+$$<p>
+根据变分法求极值的必要条件，函数 $f(x)$ 必须满足欧拉-拉格朗日方程。
+对于包含高阶导数的泛函，其欧拉方程为：
+</p>
+$$
+\frac{\partial \Psi}{\partial f} - \frac{d}{dx}\left(\frac{\partial \Psi}{\partial f'}\right) +
+\frac{d^2}{dx^2}\left(\frac{\partial \Psi}{\partial f''}\right) = 0
+$$<p>
+将 $\Psi$ 代入，得到一个常系数四阶常微分方程：
+</p>
+$$
+2f(x) - 2\lambda_1 f''(x) + 2\lambda_2 f''''(x) + \lambda_3 = 0
+$$<p>
+求解特征方程：通过求二次变分 $\delta^2 J$，Canny 证明了为了使系统存在最小值，方程的特征根必定是四个复数根，
+形式为 $\gamma = \pm \alpha \pm i\omega$。因此，该微分方程在区间 $[-W, 0]$ 内的通解是一个有阻尼的振荡系统，
+即指数函数与三角函数的乘积叠加：
+</p>
+$$
+f(x) = a_1 e^{\alpha x} \sin(\omega x) + a_2 e^{\alpha x} \cos(\omega x) + a_3 e^{-\alpha x} \sin(\omega x)+ a_4 e^{-\alpha x} \cos(\omega x) + c
+$$<p>
+利用边界条件$f(0)=0, f(-W)=0$，可以解出待定系数。经过数值优化后，Canny 发现这个四阶微分方程的解在波形上极其逼近高斯函数的一阶导数
+$G&rsquo;(x) = -\frac{x}{\sigma^2} \exp(-\frac{x^2}{2\sigma^2})$。</p>
+<h4 id="扩展至二维">扩展至二维
+</h4><p>上述推导是在一维切面上完成的。在真实的二维图像 $I(x,y)$ 中，边缘的方向是未知的。Canny 利用了多变量微积分将算法扩展到二维空间。
+设二维平滑函数为对称高斯 $G(x,y)$。图像被平滑后，任意一点的法向向量（即梯度方向 $\vec{n}$）可以由下式确定：
+</p>
+$$
+\vec{n} = \frac{\nabla (G * I)}{|\nabla (G * I)|}
+$$<p>在二维平面上寻找边缘点，等价于在梯度方向 $\vec{n}$ 上，寻找方向导数 $G_{\vec{n}}$ 的局部最大值。
+在微积分中，方向导数的极值点对应于二阶方向导数的零交叉点。因此，非极大值抑制的数学本质就是求解以下偏微分方程：
+</p>
+$$
+\frac{\partial^2}{\partial \vec{n}^2} (G * I) = 0
+$$<h3 id="算法流程">算法流程
+</h3><h4 id="高斯平滑滤波">高斯平滑滤波
+</h4><p>由于图像在获取和传输过程中往往会受到噪声干扰，而边缘检测本质上是求导操作，导数对噪声极为敏感（噪声会导致局部强烈的假边缘）。
+因此，第一步必须使用高斯滤波器对图像进行平滑降噪。实际上，根据卷积的性质（由于偶函数卷积和互相关等价，所以这里直接用卷积代替）
+高斯滤波与梯度计算的结合就相当于用高斯核的一阶导数对图像进行滤波。
+</p>
+$$
+\frac{d}{dx} \left(f * g\right) = f * \frac{d}{dx}g
+$$<p>用一个二维高斯核与原始图像进行卷积。高斯核的大小（例如 $3\times3$、$5\times5$）和标准差 $\sigma$ 决定了平滑的程度。$\sigma$ 越大，平滑越强，抗噪越好，
+但边缘细节也会丢失更多。这一点 Canny 也在论文中提到了，就是所谓的&quot;不确定性原理&quot;，将泛函在空间上缩放，即令
+</p>
+$$
+\Sigma(f_\omega)=\sqrt{\omega}\Sigma(f),\quad\Lambda(f_\omega')=\frac{1}{\sqrt{\omega}}\Lambda(f')
+$$<p>
+$\omega$对两个指标的作用是相反的。</p>
+<h4 id="计算梯度幅值和方向">计算梯度幅值和方向
+</h4><p>找到图像中像素亮度变化最剧烈的地方，即潜在的边缘。边缘通常发生在亮度突变的地方，数学上表现为一阶导数的极值。
+使用差分算子（最常用的是 Sobel 算子，也有用 Prewitt 或 Roberts 算子的）分别计算图像在水平方向（X 轴）和垂直方向（Y 轴）的梯度幅值 $G_x$ 和 $G_y$。
+然后计算每个像素点的综合梯度幅值和梯度方向：</p>
+<ul>
+<li>梯度幅值: $G = \sqrt{G_x^2 + G_y^2}$（代表边缘的强度）</li>
+<li>梯度方向: $\theta = \arctan\left(\frac{G_y}{G_x}\right)$ （代表边缘的走向，垂直于边缘）</li>
+</ul>
+<h4 id="非极大值抑制">非极大值抑制
+</h4><p>将模糊、较宽的边缘&quot;瘦身&quot;为单像素宽的细线条，精确定位边缘中心。经过平滑和梯度计算后，得到的边缘往往比较粗。我们要找出真正的边缘点，
+也就是在局部梯度方向上变化最剧烈的那个点。</p>
+<p>遍历图像中的每一个像素,查看该像素的梯度方向。为了简化计算，通常将梯度方向近似为四个主要方向之一：0°（水平）、45°（对角）、90°（垂直）或 135°（反对角）。
+沿着这个梯度方向，比较该像素与其前后相邻两个像素的梯度幅值。</p>
+<ul>
+<li>如果该像素的梯度幅值不是这三个点中最大的，则将其梯度值设为 0。</li>
+<li>如果它是最大的，则保留其梯度值，作为候选边缘点。</li>
+</ul>
+<h4 id="双阈值检测">双阈值检测
+</h4><p>区分真实的强边缘和可能由噪声引起的弱边缘。经过非极大值抑制后，剩下的像素点都是局部的梯度极大值，
+但其中有些极大值可能是由微小的噪声波动引起的。Canny 引入了高、低两个阈值。设定一个高阈值和一个低阈值</p>
+<ul>
+<li>强边缘：梯度幅值 &gt; 高阈值。这些被认为是极其可靠的真实边缘。</li>
+<li>弱边缘：低阈值 &lt; 梯度幅值 $\le$ 高阈值。这些点待定，可能是真实边缘的延伸，也可能是噪声。</li>
+<li>被抑制：梯度幅值 $\le$ 低阈值。直接当作背景或噪声剔除，值设为 0。</li>
+</ul>
+<h4 id="滞后边界跟踪">滞后边界跟踪
+</h4><p>解决边缘断裂问题，将有效的弱边缘连接成完整的线条。真实的边缘通常是连续的。如果一个弱边缘点与一个强边缘点相连，
+那么这个弱边缘很大概率也是真实边缘的一部分；如果一个弱边缘孤立存在，则很可能是噪声。</p>
+<p>遍历所有的&quot;弱边缘&quot;像素：检查其周围的连通邻域。如果在这个邻域内存在至少一个强边缘像素，那么这个弱边缘就被保留，
+并升级为强边缘，正式成为最终输出的边缘点。如果周围没有任何强边缘相连，则将该弱边缘抑制，设为 0。</p>
+<h3 id="尺度讨论">尺度讨论
+</h3><p>根据上述公式，$\omega$对两个指标的作用是相反的，而高斯核$\sigma$正比于$\omega$，因此我们可以得出以下定性的分析</p>
+<ul>
+<li>$\sigma$ 越小，平滑越弱，抗噪越差，但边缘细节也会保留更多。</li>
+<li>$\sigma$ 越大，平滑越强，抗噪越好，但边缘细节也会丢失更多。</li>
+</ul>
+<h2 id="软件实现">软件实现
+</h2><p>编程语言为python 3.11.0，开发环境为PyCharm 2025.3.3。</p>
+<h3 id="高斯平滑滤波-1">高斯平滑滤波
+</h3><p>采用上次作业中的高斯平滑滤波函数。</p>
+<h3 id="计算梯度幅值和方向-1">计算梯度幅值和方向
+</h3><p>使用 Sobel 算子计算图像在水平方向（X 轴）和垂直方向（Y 轴）的梯度幅值 $G_x$ 和 $G_y$，
+再通过式计算每个像素点的综合梯度幅值和梯度方向。</p>
+<p><strong>注意</strong>：这里进行滤波的时候不能使类型为uint8，Sobel 算子的计算结果可以为负数，
+若使用uint8类型会导致计算值溢出。所以我采用了float32类型。</p>
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_code.png"><figcaption>
+      <h4>Sobel 算子代码</h4>
+    </figcaption>
+</figure>
+
+<h3 id="非极大值抑制-1">非极大值抑制
+</h3><p>由于圆周上下对称，搜索也是前后都进行的，所以只需要半圆的四个方向即可。
+将半圆周四等分，分别对应0°、45°、90°、135°。判断前后两个像素的梯度幅值是否大于当前像素的梯度幅值。</p>
+<p><strong>注意</strong>：遍历范围需要往内部缩减一格，否则会溢出。</p>
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/nonmax_spress_code.png"><figcaption>
+      <h4>非极大值抑制代码</h4>
+    </figcaption>
+</figure>
+
+<h3 id="双阈值检测-1">双阈值检测
+</h3><p>按照理论的实现即可，我这里采用的是取相对比例抑制，opencv中的Canny函数是直接设定高阈值和低阈值。
+由于不同图像中的阈值范围不同，设置比例可能更加通用一点。</p>
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold_code.png"><figcaption>
+      <h4>双阈值检测代码</h4>
+    </figcaption>
+</figure>
+
+<h3 id="滞后边界跟踪-1">滞后边界跟踪
+</h3><p>此处搜索范围为$3\times3$</p>
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis_code.png"><figcaption>
+      <h4>滞后边界跟踪代码</h4>
+    </figcaption>
+</figure>
+
+<h2 id="数据分析和可视化">数据分析和可视化
+</h2><p>图片采用经典的cameraman图像，包含多个不同的边缘和噪声。</p>
+<h3 id="每步拆分">每步拆分
+</h3><p>高斯核采用$\sigma = 1.4$，$ksize = (5, 5)$，高阈值比例为$0.12$，低阈值比例为$0.05$。处理结果如下所示。
+可以看到，非极大值抑制很好地将边缘精确定位下来，滞后阈值检测则能够将边缘连接起来，但由于探测范围比较小，连接的边有限。
+后方的建筑物就因为缺少足够的强边缘而被略去了。</p>
+<p><figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/camera_man.png"><figcaption>
+      <h4>原始图像</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/gaussian_blur.png"><figcaption>
+      <h4>高斯滤波</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_filters.png"><figcaption>
+      <h4>Sobel 算子滤波</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/non_max_suppression.png"><figcaption>
+      <h4>非极大值抑制</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold.png"><figcaption>
+      <h4>双阈值检测</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis.png"><figcaption>
+      <h4>滞后边界跟踪</h4>
+    </figcaption>
+</figure>
+</p>
+<h3 id="尺度讨论-1">尺度讨论
+</h3><p>分别对 $\sigma=0.5, 1.0, 1.5, 2.0$ 进行测试。下图展示了不同高斯平滑尺度对边缘检测结果的影响。</p>
+<p>可以看到，当 $\sigma=0.5$ 时，平滑程度较低，边缘检测结果保留了极高的细节，
+但同时对噪声极其敏感。前方草地极细碎的纹理以及图像固有的高频噪点都被当作边缘提取了出来，使得画面显得较为杂乱。</p>
+<p>当 $\sigma=1.0$ 时，高斯滤波的平滑作用开始显现，草地区域的细碎噪点被大量抑制，
+同时人物主体和背景建筑的轮廓依然保持清晰，取得了较好的信噪比与定位精度折中。</p>
+<p>当 $\sigma=1.5$ 时，图像中的高频噪点已基本被完全滤除，画面十分干净。但由于平滑尺度的增大，
+部分真实弱边缘的梯度幅值下降，导致后方远景建筑群的微弱轮廓开始被阈值抑制并逐渐消失。</p>
+<p>当 $\sigma=2.0$ 时，高频信息被进一步过度平滑。不仅更多细节边缘（如摄影师大衣的褶皱、远处的塔楼结构）因梯度跌破阈值而彻底丢失，
+且定位精度（Localization）的显著下降导致部分相邻边缘发生移位或粘连，造成局部线条结构失真。
+总体而言，有效边缘的数量随着 $\sigma$ 的增大呈现减少趋势。</p>
+<p><figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_0.5.png"><figcaption>
+      <h4>σ=0.5</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.0.png"><figcaption>
+      <h4>σ=1.0</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.5.png"><figcaption>
+      <h4>σ=1.5</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_2.0.png"><figcaption>
+      <h4>σ=2.0</h4>
+    </figcaption>
+</figure>
+</p>
+<h2 id="结论">结论
+</h2><p>本次作业从底层数学原理出发，深入剖析并完整复现了 Canny 边缘检测算法。主要成果包括：</p>
+<ul>
+<li><strong>理论验证</strong>：系统梳理了算法背后的变分法最优化模型与三大评价准则，深刻理解了边缘检测中抗噪性与定位精度之间不可调和的&quot;不确定性原理&quot;。</li>
+<li><strong>底层算法实现</strong>：脱离高度封装的计算机视觉库，利用 Python 与 NumPy 库从零构建了高斯平滑、Sobel 梯度计算、非极大值抑制（NMS）以及滞后双阈值连通等核心模块，成功实现了将模糊的图像梯度细化为单像素宽连续轮廓的完整处理链路。</li>
+<li><strong>尺度效应分析</strong>：通过对经典 Cameraman 测试图像的参数对比实验，直观且定量地验证了高斯核标准差 $\sigma$ 对特征提取结果的影响。实验结果与理论推导高度吻合，证实了 $\sigma$ 增大时高频细节丢失及边缘定位精度下降的物理现象。</li>
+</ul>
+<h2 id="参考文献">参考文献
+</h2><p>[1] Canny, J. (1986). A Computational Approach to Edge Detection. IEEE Transactions on Pattern Analysis and Machine Intelligence, PAMI-8(6), 679-698.</p>
+<p>[2] Gonzalez, R. C., &amp; Woods, R. E. (2011). Digital Image Processing (3rd ed.). Prentice Hall.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/">
+        
+        
+            <div class="article-image">
+                <img src="/p/resnet-bottleneck-architecture/illust_77235380_20191124_002921.015d1fbb815537af317fdc4b04a8b9ec.015d1fbb815537af317fdc4b04a8b9ec_hu_86643a082130c133.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 高斯滤波"
+                        
+                        data-hash="md5-AV0fu4FVN68xf9xLBKi57A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">高斯滤波</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script src="https://utteranc.es/client.js" 
+        repo=""
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    let utterancesLoaded = false;
+
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+
+        
+        utterancesLoaded = true;
+        setUtterancesTheme(document.documentElement.dataset.scheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (!utterancesLoaded) return;
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy;
+        
+        2025 -
+        
+        2026 Brown1729
+    </section>
+
+    <section class="powerby">
+        
+        <p>欢迎访问我的 <b><a href="https://brown1729.github.io/" target="_blank" rel="noopener">个人博客</a></b>
+        </p>
+        
+    </section>
+</footer>
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.df35fcf152abfc5ef2a69421ab5ee7c134ed69ad96b84ee09f95120316921453.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="高斯滤波是一种常用的数字处理技术，用于平滑图像并减少噪声。">
+<title>高斯滤波</title>
+
+<link rel='canonical' href='http://localhost:1313/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="高斯滤波">
+<meta property='og:description' content="高斯滤波是一种常用的数字处理技术，用于平滑图像并减少噪声。">
+<meta property='og:url' content='http://localhost:1313/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/'>
+<meta property='og:site_name' content='Brown1729'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-12T19:23:00&#43;08:00'/><meta property='article:modified_time' content='2026-04-12T19:23:00&#43;08:00'/><meta property='og:image' content='http://localhost:1313/p/resnet-bottleneck-architecture/illust_77235380_20191124_002921.jpg' />
+<meta name="twitter:title" content="高斯滤波">
+<meta name="twitter:description" content="高斯滤波是一种常用的数字处理技术，用于平滑图像并减少噪声。"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/p/resnet-bottleneck-architecture/illust_77235380_20191124_002921.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a91902b755228bb.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😴</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Brown1729</a></h1>
+            <h2 class="site-description">岁月为百代之过客。</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/273395527'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Brown1729'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/BrownZ1729'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://www.zhihu.com/people/fan-hua-84-11'
+                        target="_blank"
+                        title="Zhihu"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-zhihu"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6h6v12h-2l-2 2l-1 -2h-1z" /><path d="M4 12h6.5" /><path d="M10.5 6h-5" /><path d="M6 4c-.5 2.5 -1.5 3.5 -2.5 4.5" /><path d="M8 6v7c0 4.5 -2 5.5 -4 7" /><path d="M11 18l-3 -5" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>文章</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>查找</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#选题背景">选题背景</a></li>
+    <li><a href="#算法描述重点">算法描述（重点）</a>
+      <ol>
+        <li><a href="#高斯核">高斯核</a></li>
+        <li><a href="#参数影响">参数影响</a></li>
+        <li><a href="#性质">性质</a></li>
+        <li><a href="#算法流程">算法流程</a>
+          <ol>
+            <li><a href="#构建高斯核">构建高斯核</a></li>
+            <li><a href="#与可分离性的结合">与可分离性的结合</a></li>
+            <li><a href="#对边界的处理">对边界的处理</a></li>
+          </ol>
+        </li>
+        <li><a href="#高斯滤波去噪原理">高斯滤波去噪原理</a>
+          <ol>
+            <li><a href="#空间域">空间域</a></li>
+            <li><a href="#频域">频域</a></li>
+          </ol>
+        </li>
+        <li><a href="#与其他滤波器相比">与其他滤波器相比</a></li>
+      </ol>
+    </li>
+    <li><a href="#软件实现">软件实现</a>
+      <ol>
+        <li><a href="#构建高斯核-1">构建高斯核</a></li>
+        <li><a href="#cv2filter2d">cv2.filter2d</a></li>
+        <li><a href="#利用高斯滤波的可分离性">利用高斯滤波的可分离性</a></li>
+      </ol>
+    </li>
+    <li><a href="#数据分析和可视化">数据分析和可视化</a>
+      <ol>
+        <li><a href="#处理速度">处理速度</a></li>
+        <li><a href="#模糊">模糊</a></li>
+        <li><a href="#去噪">去噪</a>
+          <ol>
+            <li><a href="#指标">指标</a></li>
+            <li><a href="#高斯噪声">高斯噪声</a></li>
+            <li><a href="#椒盐噪声">椒盐噪声</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#结论">结论</a>
+      <ol>
+        <li><a href="#主要成果">主要成果</a></li>
+        <li><a href="#未来改进方向">未来改进方向</a></li>
+      </ol>
+    </li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/">
+                <img src="/p/resnet-bottleneck-architecture/illust_77235380_20191124_002921_hu_5709d8d4373d46d3.jpg"
+                        srcset="/p/resnet-bottleneck-architecture/illust_77235380_20191124_002921_hu_5709d8d4373d46d3.jpg 800w, /p/resnet-bottleneck-architecture/illust_77235380_20191124_002921_hu_95f2b5647784ce54.jpg 1600w"
+                        width="800" 
+                        height="457" 
+                        loading="lazy"
+                        alt="Featured image of post 高斯滤波" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" >
+                数字图像处理
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/">高斯滤波</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            高斯滤波是一种常用的数字处理技术，用于平滑图像并减少噪声。
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Apr 12, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 16 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="高斯滤波算法实现">高斯滤波算法实现
+</h1><h2 id="选题背景">选题背景
+</h2><p>数字图像在获取、传输与存储过程中不可避免地会受到噪声干扰，其中高斯噪声因符合传感器热噪声、光照波动等物理过程的统计特性，成为图像中最常见的噪声类型之一。如何有效抑制高斯噪声的同时最大程度保留图像的边缘与细节结构，是图像预处理阶段的核心问题。高斯滤波作为一种经典的线性平滑滤波技术，凭借其数学上的严谨性（高斯核为尺度空间理论中的唯一线性核[1]）、物理上的直观性（邻域像素权重随距离递减）以及计算上的高效性（二维高斯核可分解为两个一维核的级联），在数字图像处理领域占据了基础而重要的地位。</p>
+<p>在应用层面，高斯滤波已广泛渗透至众多关键领域。在医学图像分析中，CT、MRI等影像常受高斯噪声污染，高斯滤波作为预处理步骤可提升信噪比，为后续的病灶分割与三维重建提供更可靠的数据基础；在自动驾驶视觉感知中，摄像头采集的图像在弱光或高速运动场景下常伴随噪声，高斯滤波被用于构建尺度空间，支撑SIFT、ORB等特征提取算法的稳定性，从而保障目标检测与跟踪的准确性；在工业缺陷检测中，对金属表面或电子元件的图像进行高斯平滑，可抑制纹理噪声，突显裂纹、划痕等关键缺陷；此外，在图像增强与摄影后期中，高斯模糊被广泛用于背景虚化、光晕模拟及隐私保护，成为图形图像软件中的标准工具。</p>
+<p>针对高斯噪声的抑制问题，传统解决思路主要分为空间域与频域两类。空间域方法以高斯滤波为核心，通过构造高斯卷积核直接对图像进行加权平均；频域方法则利用高斯函数的傅里叶变换仍为高斯函数的特性，在频域实现低通滤波。由于二维高斯核具有可分离性，实际实现中常将二维卷积分解为先后执行的行、列一维卷积，将计算复杂度从$O(n^2m^2)$降至$O(n^2m)$（其中，n是图像大小，m是核大小），大幅提升了处理效率。近年来，随着深度学习的发展，可学习的高斯滤波、将高斯先验嵌入卷积神经网络等方法进一步拓展了其应用边界，但传统高斯滤波因其可解释性强、无需训练数据、计算资源消耗低等优势，仍广泛应用于实时系统与资源受限场景。</p>
+<p>本次作业选择实现基于可分离卷积的高斯滤波算法，以经典的高斯核生成与快速互相关为核心技术路线。具体而言，我们将：
+（1）分析高斯核的性质和高斯滤波的去噪原理；
+（2）利用可分离性将二维滤波转化为行、列两个一维滤波的串联实现，分析其加速效果；
+（3）在不同滤波参数的组合下，评估高斯滤波的模糊效果；
+（4）与均值滤波、中值滤波进行对比实验，定量评估滤波后图像的PSNR与SSIM，展示高斯滤波在平滑噪声与保护边缘之间的平衡能力。
+通过上述算法设计与实验分析，旨在深入理解高斯滤波的工作原理、参数影响机制及其在实际应用中的适用边界，为后续更复杂的图像处理任务奠定理论与实践基础。</p>
+<h2 id="算法描述重点">算法描述（重点）
+</h2><h3 id="高斯核">高斯核
+</h3><p>二维圆对称的高斯分布如公式所示：</p>
+$$G\left(x, y, \sigma\right) = \frac{1}{2\pi\sigma^2}e^{-\left(x^2+y^2\right)/2\sigma^2}$$<p>其中：</p>
+<ul>
+<li>$(x, y)$ 是离核中心的偏置，在连续域中$(x, y) \in \mathbb{R}^2$</li>
+<li>$\sigma$ 是标准差</li>
+</ul>
+<p>图像处理领域的高斯核与连续域较为不同，由于离散域对高斯函数进行了截断，需要进行归一化处理，一般表示为：</p>
+$$G\left(x, y, \sigma\right) = Ke^{-\left(x^2+y^2\right)/2\sigma^2}$$<p>在离散域中，$(x, y) \in \mathbb{Z}^2$。假设高斯核的宽度为 $m$ 则：</p>
+$$K = \frac{1}{\sum^{\left \lfloor m/2 \right \rfloor}_{x = -\left \lfloor m/2 \right \rfloor }\sum^{\left \lfloor m/2 \right \rfloor}_{y = -\left \lfloor m/2 \right \rfloor } e^{-\left(x^2+y^2\right)/2\sigma^2}}$$<p>做这种归一化的目的有二[2]：</p>
+<p>（1）恒定灰度区域的平均值保持不变。对于一幅图像中灰度均匀的区域（例如纯色背景），滤波后的结果应保持原有的灰度值不变。若核未归一化（即系数之和不等于 1），则对恒定区域进行卷积后，输出灰度值会被放大或缩小，导致图像整体亮度偏移。归一化保证了当核与恒定灰度区域卷积时，输出等于原灰度值，从而维持了图像的亮度一致性。</p>
+<p>（2）防止引入偏差，使原图像和滤波后图像像素和相同。从信号处理的角度，滤波过程可视为对图像像素的加权求和。若核系数之和不为 1，则输出图像的像素总和会发生变化，相当于引入了直流分量的增益或衰减。归一化后，在忽略边界效应的情况下原图像与滤波后图像的像素总和保持不变，即图像的总体能量或平均亮度得以守恒。这保证了滤波操作不会人为地改变图像的整体明暗程度，使结果更符合物理直观。</p>
+<p>但同时也导致离散高斯核与实际的高斯函数存在一定的误差。</p>
+<h3 id="参数影响">参数影响
+</h3><p>以 5 × 5 大小的高斯核为例：</p>
+<p><strong>$\sigma$=0.5（小 $\sigma$）</strong>：曲线陡峭尖锐，峰值极高，能量几乎全部集中在中心原点。</p>
+<figure><img src="./figures/sigma0.5.png"><figcaption>
+      <h4>σ=0.5</h4>
+    </figcaption>
+</figure>
+
+<p><strong>$\sigma$=1.0（中 $\sigma$）</strong>：曲线平缓度适中，分布范围与峰值高度均衡。</p>
+<figure><img src="./figures/sigma1.0.png"><figcaption>
+      <h4>σ=1.0</h4>
+    </figcaption>
+</figure>
+
+<p><strong>$\sigma$=3.0（大 $\sigma$）</strong>：曲线非常平缓宽阔，峰值极低，能量向两侧大范围扩散。</p>
+<figure><img src="./figures/sigma3.0.png"><figcaption>
+      <h4>σ=3.0</h4>
+    </figcaption>
+</figure>
+
+<p>基于概率论的&quot;$3\sigma$&ldquo;原则，高斯函数在 $±3\sigma$ 之外的累积概率已接近99.7%。取半宽为 $3\sigma$，总宽度为 $6\sigma$，再加 1 保证中心对称且核尺寸为奇数，即核宽$k_{max} = 2\left\lfloor 3 \sigma\right\rfloor + 1$。此时离散截断带来的误差很小，也意味着在 $±3\sigma$ 之外的取值都接近零。因此，$k_{max}$大小的高斯核处理的结果与任意大小的高斯核得到的结果相同[2]。</p>
+<h3 id="性质">性质
+</h3><p><strong>可分离性</strong>：高斯核是唯一可分离的圆对称核，也是高斯核最重要的计算性质：</p>
+$$G(x, y) = G(x) \cdot G(y)$$<p>其中 $ G(x) = \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{x^2}{2\sigma^2}} $ 是一维高斯函数。
+这意味着二维卷积可以分解为两次一维卷积：</p>
+<ol>
+<li>先对图像每一行进行一维高斯卷积（水平方向）；</li>
+<li>再对结果每一列进行一维高斯卷积（垂直方向）。
+若图像尺寸为$n \times n$，核尺寸为 $m \times m$，直接二维卷积的时间复杂度为$O(n^2m^2)$；而分离实现为$O(2n^2m)=O(n^2m)$，当$m$较大时加速效果显著。</li>
+</ol>
+<p><strong>各向同性</strong>：二维高斯核仅依赖于到中心的距离$r = \sqrt{x^2 + y^2}$，具有各向同性。这一性质保证了滤波效果于方向无关，不会引入方向性伪影，适用于大多数无方向先验的图像处理任务。</p>
+<p><strong>卷积与互相关等价</strong>：高斯核是偶函数$G(x) = G(-x)$，所以高斯核的卷积与互相关等价，即：</p>
+$$G_1 * G_2(x) = G_1 ** G_2(x)$$<p><strong>高斯核对卷积的半群性质</strong>：高斯核在卷积运算下封闭，且满足方差相加的规律：</p>
+$$G_{\sigma_1} * G_{\sigma_2} = G_{\sqrt{\sigma_1^2 + \sigma_2 ^ 2}}$$<p>即连续两次高斯模糊（标准差分别为$\sigma_1$和$\sigma_2$）等价于一次标准差为$\sqrt{\sigma_1^2 + \sigma_2 ^ 2}$的高斯模糊。</p>
+<p><strong>频域特性</strong>：高斯函数的傅里叶变换仍为高斯函数，说明在频域范畴属于低通滤波，并且具有平滑的过渡。</p>
+<h3 id="算法流程">算法流程
+</h3><h4 id="构建高斯核">构建高斯核
+</h4><p><strong>步骤 1：选择核尺寸</strong></p>
+<p>核尺寸通常取奇数，这样核存在一个明确的中心像素，便于定位。根据&quot;3 $\sigma$&ldquo;原则，取$size = 2\left\lfloor 3 \sigma\right\rfloor + 1$，这一步决定了核的空间支撑范围。如果 $\sigma$ 较大而核尺寸过小，会截断高斯尾部，导致归一化后核形状失真，影响滤波效果。</p>
+<p><strong>步骤 2：计算偏移量</strong></p>
+<p>以 $size = 5$ 为例。偏移量范围为 $-2, -1, 0, 1, 2$，分别对应核内各位置相对于中心的距离。偏移量是计算高斯权重的自变量。对于二维核，需要生成 x 和 y 两个方向上的偏移网格。</p>
+<p><strong>步骤 3：应用高斯公式</strong></p>
+<p>对于每个位置 $(x, y)$（x 和 y 为偏移量），计算未归一化的权重：</p>
+$$G'(x, y) = e^{-\frac{x^2 + y^2}{2\sigma^2}}$$<p>对于一维核（可分离实现），则只需计算 $G&rsquo;(x)$。此时得到的系数之和不等于 1，且 $\sigma$ 越大，截断损失的面积比例越大。</p>
+<p><strong>步骤 4：归一化</strong></p>
+<p>将所有系数相加得到总和 $sum$，然后将每个系数除以 $sum$，得到最终的高斯核：</p>
+$$w\_{\text{normalized}}(x, y) = \frac{G'(x, y)}{\sum_{i,j} G'(i, j)}$$<h4 id="与可分离性的结合">与可分离性的结合
+</h4><p>实际实现中，通常不会直接构建二维核再卷积，而是利用可分离性：</p>
+<ul>
+<li>先构建一维高斯核（同样经过上述步骤，只是在一维偏移上计算并归一化）</li>
+<li>先对图像每一行进行一维卷积（水平方向）</li>
+<li>再对结果每一列进行一维卷积（垂直方向）</li>
+</ul>
+<h4 id="对边界的处理">对边界的处理
+</h4><p>滤波通常需要对边界进行扩展，如补零、反射、复制边缘等，以保证输出尺寸与原图一致，然后才从图像的第一格开始作互相关运算。</p>
+<h3 id="高斯滤波去噪原理">高斯滤波去噪原理
+</h3><h4 id="空间域">空间域
+</h4><p>高斯噪声是均值为零、独立同分布的随机扰动，对于图像中任一像素，其观测值为真实值加上噪声：</p>
+$$I\_{noise}(x, y) = I\_{true}(x,y) + n(x,y), \quad n \sim \mathcal{N}(0, \sigma^2)$$<p>高斯滤波对邻域内像素进行加权平均，权重由高斯核决定。由于噪声的均值为零，且各像素噪声相互独立，加权求和后噪声分量的期望值趋近于零：</p>
+$$\mathbb{E}\left[\sum_{i,j}\omega_{i,j}n(i,j)\right] = 0$$<p>其中，$\omega_{i,j}$为高斯核的权重。因此，噪声在加权平均过程中被互相抵消，而图像真实信号因邻域内变化平缓，加权平均后得以保留。</p>
+<h4 id="频域">频域
+</h4><p>高斯噪声的功率谱在频域中分布较为平坦，能量覆盖所有频率，但因其变化快的特性，主要集中在高频区域。高斯滤波器的频率响应仍然是高斯函数，是一个平滑的低通滤波器，所以能抑制以高频为主的高斯噪声。</p>
+<h3 id="与其他滤波器相比">与其他滤波器相比
+</h3><p>高斯滤波：在平滑效果与边缘保留之间取得最佳平衡，且具有优良的数学性质，是大多数图像处理任务的首选。
+均值滤波：实现简单，借助积分图可达到极快速度，但视觉质量较差，适用于对速度要求极高、对模糊质量不敏感的场合。</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>对比维度</th>
+          <th>高斯滤波</th>
+          <th>均值滤波</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>核形状</td>
+          <td>钟形曲面，中心权重最大，四周平滑衰减</td>
+          <td>矩形均匀分布，所有权重相等</td>
+      </tr>
+      <tr>
+          <td>滤波效果</td>
+          <td>自然平滑模糊，边缘保留较好，无振铃现象</td>
+          <td>均匀模糊，边缘处易产生块状伪影</td>
+      </tr>
+      <tr>
+          <td>边缘保留能力</td>
+          <td>较强</td>
+          <td>较弱</td>
+      </tr>
+      <tr>
+          <td>噪声抑制</td>
+          <td>有效抑制高斯噪声</td>
+          <td>抑制高斯噪声效果略差于高斯滤波</td>
+      </tr>
+      <tr>
+          <td>频域特性</td>
+          <td>高斯函数，低通</td>
+          <td>sinc函数，低通</td>
+      </tr>
+      <tr>
+          <td>可分离性</td>
+          <td>可分解为两个一维滤波</td>
+          <td>同样可分离</td>
+      </tr>
+      <tr>
+          <td>计算复杂度</td>
+          <td>通过可分离性实现O(k)每像素</td>
+          <td>同样O(k)</td>
+      </tr>
+      <tr>
+          <td>卷积封闭性</td>
+          <td>多次高斯滤波等价于一次</td>
+          <td>多次均值滤波不等价于单次</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="软件实现">软件实现
+</h2><p>本次作业基于Python3.11.0进行实现。高斯滤波分为两个部分，一是构建高斯核，二是将高斯核与原图像进行互相关算法。图片读取依赖python-opencv库的cv2.imread，互相关算法参考了python-opencv的处理逻辑[3]。</p>
+<h3 id="构建高斯核-1">构建高斯核
+</h3><p>此处考虑更加一般的情况，即高斯核水平和竖直方向的大小和方差可能不一致，所以需要单独进行计算。具体代码如：</p>
+<figure><img src="./figures/gaussian_kernel_code.png"><figcaption>
+      <h4>高斯核构建代码</h4>
+    </figcaption>
+</figure>
+
+<h3 id="cv2filter2d">cv2.filter2d
+</h3><p>原图像可以有多个通道，对于每一个通道都要进行一次滤波，所以需要将图像转为(height, width, channel)形式。</p>
+<p>为了滤波后不改变图像的大小，所以需要在图像周围进行填充，一般有常量填充、复制边缘、反射边缘等方法，这里均进行了实现。在实际中（参考opencv），核并不总是以核中心为锚点（即核的作用点）。锚点的选取也会影响到滤波的效果，锚点位置影响图像周围填充的大小。填充采用numpy.pad函数：</p>
+<figure><img src="./figures/padding_code.png"><figcaption>
+      <h4>周围填充代码</h4>
+    </figcaption>
+</figure>
+
+<p>在opencv中，计算方式如下[3]：</p>
+$$\text{dst}(x, y) = \sum\_{x', y'} \text{kernel}(x', y') \cdot \text{src}(x+x'-\text{anchor}.x,, y+y'-\text{anchor}.y)$$$$\quad x'\in \left\[0, \text{kernel}.cols\right], \quad y' \in \left\[0, \text{kernel}.rows\right]$$<p>opencv中，还会引入一个 delta，为滤波后的图像加上偏置，互相关运算代码：</p>
+<figure><img src="./figures/filter2d_conv.png"><figcaption>
+      <h4>互相关运算代码</h4>
+    </figcaption>
+</figure>
+
+<h3 id="利用高斯滤波的可分离性">利用高斯滤波的可分离性
+</h3><p>在先前我们已多次提到可分离性，这里给出代码实现，其中manual_filter2d为上述提到的参考opencv实现的互相关方法。</p>
+<figure><img src="./figures/separate_blur.png"><figcaption>
+      <h4>核分离的高斯模糊代码</h4>
+    </figcaption>
+</figure>
+
+<h2 id="数据分析和可视化">数据分析和可视化
+</h2><p>本节测试图片来自画师JW作品《且慢听说前面风很大》，因为其同时包含细节较多和较少的区域，图片分辨率适中，所以作为实验对象。</p>
+<h3 id="处理速度">处理速度
+</h3><p>本部分测试了将核整体进行滤波与将核分离进行滤波的处理时间，图片分辨率为$2800\times1600$，采用$7 \times 7,\quad \sigma=1$的核与$31 \times 31,\quad \sigma=5$的核。从表中我们可以看到，当核的体积较小时，未分离方式所花时间比分离方式少，这是因为分离会多新建一次图像带来耗时，而核体积本身就很小，提速不明显，新建图像的时间开销更大；当核的体积较大时，未分离方式所花时间比分离方式多，此时互相关带来的时间开销超过新建图像的耗时。</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>计算方式</th>
+          <th>未分离</th>
+          <th>分离</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>$7 \times 7,\quad \sigma=1$</td>
+          <td>21.96s</td>
+          <td>37.06s</td>
+      </tr>
+      <tr>
+          <td>$31 \times 31,\quad \sigma=5$</td>
+          <td>94.24s</td>
+          <td>41.11s</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="模糊">模糊
+</h3><p>本部分按照$size = 2\left\lfloor 3 \sigma\right\rfloor + 1$取了三个不同方差的高斯核。可以看到，当方差越大时，高斯滤波造成的结果越模糊。将$7 \times 7,\quad \sigma=1$与$19 \times 19,\quad \sigma=1$进行做差，得到的差图全为黑色，进一步证明了最大有效核宽的理论。</p>
+<figure><img src="./figures/cloud.jpg"><figcaption>
+      <h4>原始图像</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/blur_7x7_1.jpg"><figcaption>
+      <h4>7×7, σ=1</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/blur_9x9_1.5.jpg"><figcaption>
+      <h4>9×9, σ=1.5</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/blur_19x19_3.jpg"><figcaption>
+      <h4>19×19, σ=3</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/blur_19x19_1.jpg"><figcaption>
+      <h4>19×19, σ=1</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/diff_1.jpg"><figcaption>
+      <h4>7×7与19×19作差</h4>
+    </figcaption>
+</figure>
+
+<h3 id="去噪">去噪
+</h3><h4 id="指标">指标
+</h4><p><strong>1. PSNR (Peak Signal-to-Noise Ratio，峰值信噪比)</strong></p>
+<p>PSNR是最常用的图像质量评价指标之一，基于均方误差(MSE)计算，用于衡量去噪后图像与原始图像之间的差异。其数学定义为：</p>
+$$\text{MSE} = \frac{1}{MN} \sum_{i=1}^{M} \sum_{j=1}^{N} [I(i,j) - K(i,j)]^2$$$$\text{PSNR} = 10 \cdot \log_{10} \left( \frac{\text{MAX}_I^2}{\text{MSE}} \right)$$<p>其中：</p>
+<ul>
+<li>$M$和$N$分别为图像的高度和宽度</li>
+<li>$I(i,j)$为原始图像在位置$(i,j)$的像素值</li>
+<li>$K(i,j)$为去噪后图像在位置$(i,j)$的像素值</li>
+<li>$\text{MAX}_I$为图像的最大可能像素值（对于8位图像为255）</li>
+</ul>
+<p>PSNR值越高，表示图像质量越好。通常认为PSNR大于30dB时图像质量较好，20-30dB为可接受范围，低于20dB则质量较差。</p>
+<p><strong>2. SSIM (Structural Similarity Index Measure，结构相似性指数)</strong></p>
+<p>SSIM是一种更符合人类视觉感知的图像质量评价指标，从亮度、对比度和结构三个方面综合评估图像相似性。其定义为：</p>
+$$
+\text{SSIM}(x,y) = [l(x,y)]^\alpha \cdot [c(x,y)]^\beta \cdot [s(x,y)]^\gamma
+$$<p>其中亮度比较函数：
+</p>
+$$l(x,y) = \frac{2\mu_x\mu_y + C_1}{\mu_x^2 + \mu_y^2 + C_1}$$<p>对比度比较函数：
+</p>
+$$c(x,y) = \frac{2\sigma_x\sigma_y + C_2}{\sigma_x^2 + \sigma_y^2 + C_2}$$<p>结构比较函数：
+</p>
+$$s(x,y) = \frac{\sigma_{xy} + C_3}{\sigma_x\sigma_y + C_3}$$<p>其中：</p>
+<ul>
+<li>$\mu_x, \mu_y$分别为图像$x$和$y$的均值</li>
+<li>$\sigma_x, \sigma_y$分别为图像$x$和$y$的标准差</li>
+<li>$\sigma_{xy}$为图像$x$和$y$的协方差</li>
+<li>$C_1, C_2, C_3$为小的正常数，避免分母为零</li>
+<li>通常取$\alpha = \beta = \gamma = 1$，$C_3 = C_2/2$</li>
+</ul>
+<p>SSIM的取值范围为[0,1]，值越接近1表示图像质量越好。相比PSNR，SSIM能更好地反映人类视觉对图像结构信息的感知。</p>
+<p><strong>指标应用说明</strong>：
+在本次实验中，PSNR用于定量评估去噪算法对噪声的抑制能力，而SSIM则用于评估算法在保持图像结构信息方面的表现。两者结合使用能够更全面地评价高斯滤波算法的性能。</p>
+<h4 id="高斯噪声">高斯噪声
+</h4><p>本部分测试了不同大小的高斯核对高斯噪声的处理效果，同时与均值滤波进行比对。原图添加了$\mu=0,\sigma=20$的高斯噪声，分别进行$5 \times 5,\quad \sigma=1$和$9 \times 9,\quad \sigma=1.5$的高斯滤波，以及$5 \times 5$的均值滤波。</p>
+<p>对比可知，高斯核越大，对噪声的抑制效果越好，但对图像的模糊程度越高。同等大小下，均值滤波的模糊程度比高斯滤波高，但去噪的效果几乎相同，从指标上可得，高斯滤波的去噪效果较好。</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>滤波方式</th>
+          <th>PSNR(dB)</th>
+          <th>SSIM</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>添加噪声</td>
+          <td>25.19</td>
+          <td>0.45</td>
+      </tr>
+      <tr>
+          <td>高斯滤波$（5 \times 5,\quad \sigma=1）$</td>
+          <td>30.02</td>
+          <td>0.78</td>
+      </tr>
+      <tr>
+          <td>高斯滤波$（9 \times 9,\quad \sigma=1.5）$</td>
+          <td>29.19</td>
+          <td>0.79</td>
+      </tr>
+      <tr>
+          <td>均值滤波$（5 \times 5）$</td>
+          <td>28.85</td>
+          <td>0.76</td>
+      </tr>
+  </tbody>
+</table></div>
+<figure><img src="./figures/cloud_gaussian_20.jpg"><figcaption>
+      <h4>添加了μ=0,σ=20的高斯噪声</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/cloud_gaussian_20_blur_5x5_1.jpg"><figcaption>
+      <h4>进行5×5,σ=1的高斯滤波</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/cloud_gaussian_20_blur_9x9_1.5.jpg"><figcaption>
+      <h4>进行9×9,σ=1.5的高斯滤波</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/cloud_gaussian_20_box_blur_5x5.jpg"><figcaption>
+      <h4>进行5×5的均值滤波</h4>
+    </figcaption>
+</figure>
+
+<h4 id="椒盐噪声">椒盐噪声
+</h4><p>椒盐噪声是图像处理中常见的脉冲噪声类型，表现为图像中随机出现的黑白像素点。其数学模型可表示为：</p>
+$$I\_{noise}(x,y) =
+\begin{cases}
+0      & \text{以概率 } p\_1       \\
+255    & \text{以概率 } p\_2       \\
+I(x,y) & \text{以概率 } 1-p\_1-p\_2
+\end{cases}$$<p>其中$p_1,p_2$为噪声密度，控制噪声强度。</p>
+<p>高斯滤波对椒盐噪声的去噪效果有限，主要原因在于：</p>
+<ul>
+<li><strong>极值敏感性</strong>：椒盐噪声为极值噪声（0或255），高斯滤波的加权平均无法有效消除这种极端值</li>
+<li><strong>权重污染</strong>：椒盐噪声点会污染高斯核的权重计算，影响邻域像素的平滑效果</li>
+<li><strong>边缘模糊</strong>：为消除椒盐噪声需要较大的$\sigma$值，但会导致图像过度模糊，丢失细节信息</li>
+<li><strong>非线性特性</strong>：椒盐噪声具有非线性特性，而高斯滤波是线性滤波器，处理效果有限</li>
+</ul>
+<p>本部分在测试图像上添加$p_1=0.2,p_2=0.2$的椒盐噪声，分别使用$9\times9$高斯核（$\sigma=1.5$）和$5\times5$中值滤波进行对比实验。中值滤波作为非线性滤波器，对椒盐噪声具有更好的处理效果。高斯滤波效果较差。</p>
+<figure><img src="./figures/cloud_salt_pepper.jpg"><figcaption>
+      <h4>添加了椒盐噪声</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/cloud_salt_pepper_blur_9x9_1.5.jpg"><figcaption>
+      <h4>进行9×9,σ=1.5的高斯滤波</h4>
+    </figcaption>
+</figure>
+
+<figure><img src="./figures/cloud_salt_pepper_median_blur_5x5.jpg"><figcaption>
+      <h4>进行5×5的中值滤波</h4>
+    </figcaption>
+</figure>
+
+<h2 id="结论">结论
+</h2><p>本次数字图像处理作业成功实现了基于可分离卷积的高斯滤波算法，并对其在图像模糊和去噪中的应用进行了系统研究。通过理论分析、算法实现和实验验证，达到了预期目标，主要成果总结如下：</p>
+<h3 id="主要成果">主要成果
+</h3><ol>
+<li><strong>算法实现</strong>：成功构建了可分离卷积的高斯滤波算法，实现了高斯核的自动生成、归一化处理以及高效的二维卷积运算。算法充分利用了高斯核的可分离性，将计算复杂度从$O(n^2m^2)$降低到$O(n^2m)$，显著提升了处理效率。</li>
+<li><strong>理论验证</strong>：通过数学推导验证了高斯核的卷积半群性质和频域特性，证明了连续两次高斯模糊等价于一次标准差为$\sqrt{\sigma_1^2 + \sigma_2^2}$的高斯模糊，为参数选择提供了理论依据。</li>
+<li><strong>实验分析</strong>：系统评估了高斯滤波在不同参数设置下的性能表现</li>
+</ol>
+<p><strong>模糊程度与参数 $\sigma$ 的关系</strong>：
+实验验证了标准差 $\sigma$ 对模糊程度的控制作用。当 $\sigma$ 较小时（如 $\sigma = 1$），高斯核能量集中，滤波后图像细节保留较好，仅产生轻微平滑；随着 $\sigma$ 增大（如 $\sigma = 1.5$、$\sigma = 3$），核的支撑范围扩大，权重分布更平坦，图像模糊程度明显增加。同时，依据&rdquo;$\text{size} = 2\lfloor 3\sigma\rfloor + 1$&ldquo;的经验公式，当核尺寸达到理论有效宽度后，继续增加核尺寸不再改变滤波结果（如 $7 \times 7, \sigma = 1$ 与 $19 \times 19, \sigma = 1$ 的差图为全黑），验证了截断误差可忽略的结论。</p>
+<p><strong>计算效率与可分性</strong>：
+对比了直接二维卷积与分离卷积的实现效率。对于小核（$7 \times 7$），未分离方式耗时 21.96 秒，而分离方式因需额外图像分配反而耗时 37.06 秒；对于大核（$31 \times 31$），未分离方式耗时 94.24 秒，分离方式仅耗时 41.11 秒，加速比超过 2 倍。结果表明，可分性在大核滤波时优势显著，而在小核场景下可直接使用二维卷积以避免内存开销。</p>
+<p><strong>去噪性能</strong>：</p>
+<ul>
+<li><strong>高斯噪声：</strong>
+在添加 $\mu = 0, \sigma = 20$ 的高斯噪声图像上，采用 $5 \times 5, \sigma = 1$ 的高斯滤波后，PSNR 从 25.19 dB 提升至 30.02 dB，SSIM 从 0.45 提升至 0.78；同尺寸均值滤波的 PSNR 为 28.85 dB，SSIM 为 0.76。高斯滤波在两项指标上均略优于均值滤波，且当 $\sigma$ 增至 1.5（核尺寸 $9 \times 9$）时，PSNR 虽略有下降（29.19 dB），但 SSIM 仍保持较高水平（0.79），说明在保持结构相似性方面高斯滤波更具优势。</li>
+<li><strong>椒盐噪声：</strong>
+在添加密度为 0.2 的椒盐噪声图像上，高斯滤波（$9 \times 9, \sigma = 1.5$）无法有效去除极值点，图像中仍残留大量黑白斑点，而中值滤波（$5 \times 5$）能基本恢复图像结构。实验表明，高斯滤波对脉冲噪声效果有限，体现了其作为线性滤波器的局限性。</li>
+</ul>
+<h3 id="未来改进方向">未来改进方向
+</h3><p><strong>深度学习应用</strong>：将高斯先验嵌入神经网络，实现可学习的高斯滤波。研究基于图像内容的自适应$\sigma$选择策略，实现参数自动化。</p>
+<p><strong>多种滤波混合使用</strong>：识别不同的噪声特征，采用对应最有效的滤波方式。</p>
+<p>通过本次作业，不仅深入理解了高斯滤波的理论基础和实现技术，也为后续更复杂的图像处理任务奠定了坚实基础。高斯滤波作为经典的数字图像处理技术，在保持其基础地位的同时，仍有广阔的研究和应用空间。</p>
+<h2 id="参考文献">参考文献
+</h2><p>[1] Lowe, D. G. (2004). Distinctive image features from scale-invariant keypoints. International journal of computer vision, 60(2), 91-110.</p>
+<p>[2] Gonzalez, R. C., &amp; Woods, R. E. (2011). Digital image processing. Pearson Education.</p>
+<p>[3] OpenCV GaussianBlur Documentation. <a class="link" href="https://docs.opencv.org/"  target="_blank" rel="noopener"
+    >https://docs.opencv.org/</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/">
+        
+        
+            <div class="article-image">
+                <img src="/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467.717685ead675885f5bd0e895ad8a5006_hu_61bf7e9e8eec19e1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Canny边缘检测"
+                        
+                        data-hash="md5-cXaF6tZ1iF9b0OiVrYpQBg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Canny边缘检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script src="https://utteranc.es/client.js" 
+        repo=""
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    let utterancesLoaded = false;
+
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+
+        
+        utterancesLoaded = true;
+        setUtterancesTheme(document.documentElement.dataset.scheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (!utterancesLoaded) return;
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy;
+        
+        2025 -
+        
+        2026 Brown1729
+    </section>
+
+    <section class="powerby">
+        
+        <p>欢迎访问我的 <b><a href="https://brown1729.github.io/" target="_blank" rel="noopener">个人博客</a></b>
+        </p>
+        
+    </section>
+</footer>
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.df35fcf152abfc5ef2a69421ab5ee7c134ed69ad96b84ee09f95120316921453.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
