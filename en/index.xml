@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Brown1729</title>
-        <link>http://localhost:2127/en/</link>
+        <link>https://brown1729.github.io/en/</link>
         <description>Recent content on Brown1729</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>Brown1729</copyright>
-        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="http://localhost:2127/en/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="https://brown1729.github.io/en/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ResNet Bottleneck Architecture</title>
-        <link>http://localhost:2127/en/p/resnet-bottleneck-architecture/</link>
+        <link>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</link>
         <pubDate>Thu, 26 Mar 2026 19:37:00 +0800</pubDate>
         
-        <guid>http://localhost:2127/en/p/resnet-bottleneck-architecture/</guid>
-        <description>&lt;img src="http://localhost:2127/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h1 id=&#34;resnet---bottleneck-architecture&#34;&gt;ResNet - Bottleneck Architecture
+        <guid>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</guid>
+        <description>&lt;img src="https://brown1729.github.io/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h1 id=&#34;resnet---bottleneck-architecture&#34;&gt;ResNet - Bottleneck Architecture
 &lt;/h1&gt;&lt;h2 id=&#34;the-computational-challenge-of-going-deep&#34;&gt;The Computational Challenge of Going Deep
 &lt;/h2&gt;&lt;p&gt;As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:&lt;/p&gt;
 $$
@@ -252,10 +252,10 @@ $$&lt;p&gt;This would be impractical. The bottleneck design makes 152-layer netw
         </item>
         <item>
         <title>About</title>
-        <link>http://localhost:2127/en/about/</link>
+        <link>https://brown1729.github.io/en/about/</link>
         <pubDate>Tue, 09 Sep 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:2127/en/about/</guid>
+        <guid>https://brown1729.github.io/en/about/</guid>
         <description>&lt;h2 id=&#34;&#34;&gt;
 &lt;/h2&gt;</description>
         </item>

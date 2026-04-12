@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>深度学习 on Brown1729</title>
-        <link>http://localhost:2127/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
+        <link>https://brown1729.github.io/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
         <description>Recent content in 深度学习 on Brown1729</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>Brown1729</copyright>
-        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="http://localhost:2127/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 26 Mar 2026 19:37:00 +0800</lastBuildDate><atom:link href="https://brown1729.github.io/en/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ResNet Bottleneck Architecture</title>
-        <link>http://localhost:2127/en/p/resnet-bottleneck-architecture/</link>
+        <link>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</link>
         <pubDate>Thu, 26 Mar 2026 19:37:00 +0800</pubDate>
         
-        <guid>http://localhost:2127/en/p/resnet-bottleneck-architecture/</guid>
-        <description>&lt;img src="http://localhost:2127/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h1 id=&#34;resnet---bottleneck-architecture&#34;&gt;ResNet - Bottleneck Architecture
+        <guid>https://brown1729.github.io/en/p/resnet-bottleneck-architecture/</guid>
+        <description>&lt;img src="https://brown1729.github.io/p/resnet-%E7%93%B6%E9%A2%88%E6%9E%B6%E6%9E%84/130852450_p0.jpg" alt="Featured image of post ResNet Bottleneck Architecture" /&gt;&lt;h1 id=&#34;resnet---bottleneck-architecture&#34;&gt;ResNet - Bottleneck Architecture
 &lt;/h1&gt;&lt;h2 id=&#34;the-computational-challenge-of-going-deep&#34;&gt;The Computational Challenge of Going Deep
 &lt;/h2&gt;&lt;p&gt;As networks grow deeper, the computational cost of each residual block becomes a critical concern. A basic block with two $ 3 \times 3 $ convolutions at 256 channels costs:&lt;/p&gt;
 $$

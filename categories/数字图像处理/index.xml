@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>数字图像处理 on Brown1729</title>
-        <link>http://localhost:2127/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link>
+        <link>https://brown1729.github.io/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link>
         <description>Recent content in 数字图像处理 on Brown1729</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Brown1729</copyright>
-        <lastBuildDate>Sun, 12 Apr 2026 19:23:00 +0800</lastBuildDate><atom:link href="http://localhost:2127/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 12 Apr 2026 19:23:00 +0800</lastBuildDate><atom:link href="https://brown1729.github.io/categories/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Canny边缘检测</title>
-        <link>http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/</link>
+        <link>https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/</link>
         <pubDate>Sun, 12 Apr 2026 19:23:00 +0800</pubDate>
         
-        <guid>http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/</guid>
-        <description>&lt;img src="http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467.jpg" alt="Featured image of post Canny边缘检测" /&gt;&lt;h1 id=&#34;canny-边缘检测&#34;&gt;Canny 边缘检测
+        <guid>https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/</guid>
+        <description>&lt;img src="https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/137175467.jpg" alt="Featured image of post Canny边缘检测" /&gt;&lt;h1 id=&#34;canny-边缘检测&#34;&gt;Canny 边缘检测
 &lt;/h1&gt;&lt;h2 id=&#34;选题背景&#34;&gt;选题背景
 &lt;/h2&gt;&lt;p&gt;Canny 边缘检测算法[1][2]在计算机视觉领域享有&amp;quot;不可动摇&amp;quot;的历史地位，被广泛誉为边缘检测的&amp;quot;黄金标准&amp;quot;。&lt;/p&gt;
 &lt;p&gt;它的核心意义可以总结为以下四个方面：&lt;/p&gt;
@@ -105,14 +105,12 @@ $$&lt;p&gt;
 求解特征方程：通过求二次变分 $\delta^2 J$，Canny 证明了为了使系统存在最小值，方程的特征根必定是四个复数根，
 形式为 $\gamma = \pm \alpha \pm i\omega$。因此，该微分方程在区间 $[-W, 0]$ 内的通解是一个有阻尼的振荡系统，
 即指数函数与三角函数的乘积叠加：
+&lt;/p&gt;
 $$
-f(x) = a_1 e^{\alpha x} \sin(\omega x) + a_2 e^{\alpha x} \cos(\omega x) + a_3 e^{-\alpha x} \sin(\omega x)&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;a_4 e^{-\alpha x} \cos(\omega x) + c
-$$
+f(x) = a_1 e^{\alpha x} \sin(\omega x) + a_2 e^{\alpha x} \cos(\omega x) + a_3 e^{-\alpha x} \sin(\omega x)+ a_4 e^{-\alpha x} \cos(\omega x) + c
+$$&lt;p&gt;
 利用边界条件$f(0)=0, f(-W)=0$，可以解出待定系数。经过数值优化后，Canny 发现这个四阶微分方程的解在波形上极其逼近高斯函数的一阶导数
-$G&amp;rsquo;(x) = -\frac{x}{\sigma^2} \exp(-\frac{x^2}{2\sigma^2})$。&lt;/li&gt;
-&lt;/ul&gt;
+$G&amp;rsquo;(x) = -\frac{x}{\sigma^2} \exp(-\frac{x^2}{2\sigma^2})$。&lt;/p&gt;
 &lt;h4 id=&#34;扩展至二维&#34;&gt;扩展至二维
 &lt;/h4&gt;&lt;p&gt;上述推导是在一维切面上完成的。在真实的二维图像 $I(x,y)$ 中，边缘的方向是未知的。Canny 利用了多变量微积分将算法扩展到二维空间。
 设二维平滑函数为对称高斯 $G(x,y)$。图像被平滑后，任意一点的法向向量（即梯度方向 $\vec{n}$）可以由下式确定：
@@ -182,9 +180,9 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
 &lt;h3 id=&#34;计算梯度幅值和方向-1&#34;&gt;计算梯度幅值和方向
 &lt;/h3&gt;&lt;p&gt;使用 Sobel 算子计算图像在水平方向（X 轴）和垂直方向（Y 轴）的梯度幅值 $G_x$ 和 $G_y$，
 再通过式计算每个像素点的综合梯度幅值和梯度方向。&lt;/p&gt;
-&lt;p&gt;**注意：**这里进行滤波的时候不能使类型为uint8，Sobel 算子的计算结果可以为负数，
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：这里进行滤波的时候不能使类型为uint8，Sobel 算子的计算结果可以为负数，
 若使用uint8类型会导致计算值溢出。所以我采用了float32类型。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;Sobel 算子代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -192,8 +190,8 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
 &lt;h3 id=&#34;非极大值抑制-1&#34;&gt;非极大值抑制
 &lt;/h3&gt;&lt;p&gt;由于圆周上下对称，搜索也是前后都进行的，所以只需要半圆的四个方向即可。
 将半圆周四等分，分别对应0°、45°、90°、135°。判断前后两个像素的梯度幅值是否大于当前像素的梯度幅值。&lt;/p&gt;
-&lt;p&gt;**注意：**遍历范围需要往内部缩减一格，否则会溢出。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/nonmax_spress_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：遍历范围需要往内部缩减一格，否则会溢出。&lt;/p&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/nonmax_spress_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;非极大值抑制代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -201,14 +199,14 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
 &lt;h3 id=&#34;双阈值检测-1&#34;&gt;双阈值检测
 &lt;/h3&gt;&lt;p&gt;按照理论的实现即可，我这里采用的是取相对比例抑制，opencv中的Canny函数是直接设定高阈值和低阈值。
 由于不同图像中的阈值范围不同，设置比例可能更加通用一点。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;双阈值检测代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
 &lt;h3 id=&#34;滞后边界跟踪-1&#34;&gt;滞后边界跟踪
 &lt;/h3&gt;&lt;p&gt;此处搜索范围为$3\times3$&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;滞后边界跟踪代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -219,32 +217,32 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
 &lt;/h3&gt;&lt;p&gt;高斯核采用$\sigma = 1.4$，$ksize = (5, 5)$，高阈值比例为$0.12$，低阈值比例为$0.05$。处理结果如下所示。
 可以看到，非极大值抑制很好地将边缘精确定位下来，滞后阈值检测则能够将边缘连接起来，但由于探测范围比较小，连接的边有限。
 后方的建筑物就因为缺少足够的强边缘而被略去了。&lt;/p&gt;
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/camera_man.png&#34;&gt;&lt;figcaption&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/camera_man.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;原始图像&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/gaussian_blur.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/gaussian_blur.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;高斯滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_filters.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/sobel_filters.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;Sobel 算子滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/non_max_suppression.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/non_max_suppression.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;非极大值抑制&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/threshold.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;双阈值检测&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/hysteresis.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;滞后边界跟踪&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -260,22 +258,22 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
 &lt;p&gt;当 $\sigma=2.0$ 时，高频信息被进一步过度平滑。不仅更多细节边缘（如摄影师大衣的褶皱、远处的塔楼结构）因梯度跌破阈值而彻底丢失，
 且定位精度（Localization）的显著下降导致部分相邻边缘发生移位或粘连，造成局部线条结构失真。
 总体而言，有效边缘的数量随着 $\sigma$ 的增大呈现减少趋势。&lt;/p&gt;
-&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_0.5.png&#34;&gt;&lt;figcaption&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_0.5.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=0.5&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.0.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.0.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=1.0&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.5.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_1.5.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=1.5&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_2.0.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B/figures/edges_2.0.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=2.0&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -294,11 +292,11 @@ $\omega$对两个指标的作用是相反的。&lt;/p&gt;
         </item>
         <item>
         <title>高斯滤波</title>
-        <link>http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/</link>
+        <link>https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/</link>
         <pubDate>Sun, 12 Apr 2026 19:23:00 +0800</pubDate>
         
-        <guid>http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/</guid>
-        <description>&lt;img src="http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/illust_77235380_20191124_002921.jpg" alt="Featured image of post 高斯滤波" /&gt;&lt;h1 id=&#34;高斯滤波算法实现&#34;&gt;高斯滤波算法实现
+        <guid>https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/</guid>
+        <description>&lt;img src="https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/illust_77235380_20191124_002921.jpg" alt="Featured image of post 高斯滤波" /&gt;&lt;h1 id=&#34;高斯滤波算法实现&#34;&gt;高斯滤波算法实现
 &lt;/h1&gt;&lt;h2 id=&#34;选题背景&#34;&gt;选题背景
 &lt;/h2&gt;&lt;p&gt;数字图像在获取、传输与存储过程中不可避免地会受到噪声干扰，其中高斯噪声因符合传感器热噪声、光照波动等物理过程的统计特性，成为图像中最常见的噪声类型之一。如何有效抑制高斯噪声的同时最大程度保留图像的边缘与细节结构，是图像预处理阶段的核心问题。高斯滤波作为一种经典的线性平滑滤波技术，凭借其数学上的严谨性（高斯核为尺度空间理论中的唯一线性核[1]）、物理上的直观性（邻域像素权重随距离递减）以及计算上的高效性（二维高斯核可分解为两个一维核的级联），在数字图像处理领域占据了基础而重要的地位。&lt;/p&gt;
 &lt;p&gt;在应用层面，高斯滤波已广泛渗透至众多关键领域。在医学图像分析中，CT、MRI等影像常受高斯噪声污染，高斯滤波作为预处理步骤可提升信噪比，为后续的病灶分割与三维重建提供更可靠的数据基础；在自动驾驶视觉感知中，摄像头采集的图像在弱光或高速运动场景下常伴随噪声，高斯滤波被用于构建尺度空间，支撑SIFT、ORB等特征提取算法的稳定性，从而保障目标检测与跟踪的准确性；在工业缺陷检测中，对金属表面或电子元件的图像进行高斯平滑，可抑制纹理噪声，突显裂纹、划痕等关键缺陷；此外，在图像增强与摄影后期中，高斯模糊被广泛用于背景虚化、光晕模拟及隐私保护，成为图形图像软件中的标准工具。&lt;/p&gt;
@@ -326,19 +324,19 @@ $$K = \frac{1}{\sum^{\left \lfloor m/2 \right \rfloor}_{x = -\left \lfloor m/2 \
 &lt;h3 id=&#34;参数影响&#34;&gt;参数影响
 &lt;/h3&gt;&lt;p&gt;以 5 × 5 大小的高斯核为例：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;$\sigma$=0.5（小 $\sigma$）&lt;/strong&gt;：曲线陡峭尖锐，峰值极高，能量几乎全部集中在中心原点。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma0.5.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma0.5.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=0.5&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
 &lt;p&gt;&lt;strong&gt;$\sigma$=1.0（中 $\sigma$）&lt;/strong&gt;：曲线平缓度适中，分布范围与峰值高度均衡。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma1.0.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma1.0.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=1.0&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
 &lt;p&gt;&lt;strong&gt;$\sigma$=3.0（大 $\sigma$）&lt;/strong&gt;：曲线非常平缓宽阔，峰值极低，能量向两侧大范围扩散。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma3.0.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/sigma3.0.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;σ=3.0&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -443,7 +441,7 @@ $$\mathbb{E}\left[\sum_{i,j}\omega_{i,j}n(i,j)\right] = 0$$&lt;p&gt;其中，$\o
 &lt;/h2&gt;&lt;p&gt;本次作业基于Python3.11.0进行实现。高斯滤波分为两个部分，一是构建高斯核，二是将高斯核与原图像进行互相关算法。图片读取依赖python-opencv库的cv2.imread，互相关算法参考了python-opencv的处理逻辑[3]。&lt;/p&gt;
 &lt;h3 id=&#34;构建高斯核-1&#34;&gt;构建高斯核
 &lt;/h3&gt;&lt;p&gt;此处考虑更加一般的情况，即高斯核水平和竖直方向的大小和方差可能不一致，所以需要单独进行计算。具体代码如：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/gaussian_kernel_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/gaussian_kernel_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;高斯核构建代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -451,21 +449,21 @@ $$\mathbb{E}\left[\sum_{i,j}\omega_{i,j}n(i,j)\right] = 0$$&lt;p&gt;其中，$\o
 &lt;h3 id=&#34;cv2filter2d&#34;&gt;cv2.filter2d
 &lt;/h3&gt;&lt;p&gt;原图像可以有多个通道，对于每一个通道都要进行一次滤波，所以需要将图像转为(height, width, channel)形式。&lt;/p&gt;
 &lt;p&gt;为了滤波后不改变图像的大小，所以需要在图像周围进行填充，一般有常量填充、复制边缘、反射边缘等方法，这里均进行了实现。在实际中（参考opencv），核并不总是以核中心为锚点（即核的作用点）。锚点的选取也会影响到滤波的效果，锚点位置影响图像周围填充的大小。填充采用numpy.pad函数：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/padding_code.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/padding_code.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;周围填充代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
 &lt;p&gt;在opencv中，计算方式如下[3]：&lt;/p&gt;
 $$\text{dst}(x, y) = \sum\_{x&#39;, y&#39;} \text{kernel}(x&#39;, y&#39;) \cdot \text{src}(x+x&#39;-\text{anchor}.x,, y+y&#39;-\text{anchor}.y)$$$$\quad x&#39;\in \left\[0, \text{kernel}.cols\right], \quad y&#39; \in \left\[0, \text{kernel}.rows\right]$$&lt;p&gt;opencv中，还会引入一个 delta，为滤波后的图像加上偏置，互相关运算代码：&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/filter2d_conv.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/filter2d_conv.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;互相关运算代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
 &lt;h3 id=&#34;利用高斯滤波的可分离性&#34;&gt;利用高斯滤波的可分离性
 &lt;/h3&gt;&lt;p&gt;在先前我们已多次提到可分离性，这里给出代码实现，其中manual_filter2d为上述提到的参考opencv实现的互相关方法。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/separate_blur.png&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/separate_blur.png&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;核分离的高斯模糊代码&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -497,32 +495,32 @@ $$\text{dst}(x, y) = \sum\_{x&#39;, y&#39;} \text{kernel}(x&#39;, y&#39;) \cdot 
 &lt;/table&gt;
 &lt;h3 id=&#34;模糊&#34;&gt;模糊
 &lt;/h3&gt;&lt;p&gt;本部分按照$size = 2\left\lfloor 3 \sigma\right\rfloor + 1$取了三个不同方差的高斯核。可以看到，当方差越大时，高斯滤波造成的结果越模糊。将$7 \times 7,\quad \sigma=1$与$19 \times 19,\quad \sigma=1$进行做差，得到的差图全为黑色，进一步证明了最大有效核宽的理论。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;原始图像&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_7x7_1.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_7x7_1.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;7×7, σ=1&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;9×9, σ=1.5&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_19x19_3.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_19x19_3.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;19×19, σ=3&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_19x19_1.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/blur_19x19_1.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;19×19, σ=1&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/diff_1.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/diff_1.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;7×7与19×19作差&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -594,22 +592,22 @@ $$s(x,y) = \frac{\sigma_{xy} + C_3}{\sigma_x\sigma_y + C_3}$$&lt;p&gt;其中：&
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;添加了μ=0,σ=20的高斯噪声&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_blur_5x5_1.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_blur_5x5_1.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;进行5×5,σ=1的高斯滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;进行9×9,σ=1.5的高斯滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_box_blur_5x5.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_gaussian_20_box_blur_5x5.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;进行5×5的均值滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
@@ -630,17 +628,17 @@ I(x,y) &amp; \text{以概率 } 1-p\_1-p\_2
 &lt;li&gt;&lt;strong&gt;非线性特性&lt;/strong&gt;：椒盐噪声具有非线性特性，而高斯滤波是线性滤波器，处理效果有限&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;本部分在测试图像上添加$p_1=0.2,p_2=0.2$的椒盐噪声，分别使用$9\times9$高斯核（$\sigma=1.5$）和$5\times5$中值滤波进行对比实验。中值滤波作为非线性滤波器，对椒盐噪声具有更好的处理效果。高斯滤波效果较差。&lt;/p&gt;
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;添加了椒盐噪声&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper_blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper_blur_9x9_1.5.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;进行9×9,σ=1.5的高斯滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;figure&gt;&lt;img src=&#34;http://localhost:2127/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper_median_blur_5x5.jpg&#34;&gt;&lt;figcaption&gt;
+&lt;figure&gt;&lt;img src=&#34;https://brown1729.github.io/p/%E9%AB%98%E6%96%AF%E6%BB%A4%E6%B3%A2/figures/cloud_salt_pepper_median_blur_5x5.jpg&#34;&gt;&lt;figcaption&gt;
       &lt;h4&gt;进行5×5的中值滤波&lt;/h4&gt;
     &lt;/figcaption&gt;
 &lt;/figure&gt;
