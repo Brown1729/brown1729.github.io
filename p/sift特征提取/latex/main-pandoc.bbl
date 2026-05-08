@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{Fischler1981}
+Martin~A Fischler and Robert~C Bolles.
+\newblock Random sample consensus: A paradigm for model fitting with applications to image analysis and automated cartography.
+\newblock {\em Communications of the ACM}, 24(6):381--395, 1981.
+
+\bibitem{Harris1988ACC}
+Chris Harris and Mike Stephens.
+\newblock A combined corner and edge detector.
+\newblock In {\em Proceedings of the 4th Alvey Vision Conference}, pages 147--151, 1988.
+
+\bibitem{Lowe2004}
+David~G Lowe.
+\newblock Distinctive image features from scale-invariant keypoints.
+\newblock {\em International Journal of Computer Vision}, 60(2):91--110, 2004.
+
+\end{thebibliography}
